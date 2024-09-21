@@ -1,7 +1,9 @@
 package org.milkys.domain.member.entity;
 
 import lombok.*;
+import org.milkys.common.MilkysEnum;
 import org.milkys.common.entity.BaseEntity;
+import org.milkys.domain.member.dto.LoginDto;
 
 import javax.persistence.*;
 
@@ -35,10 +37,21 @@ public class Member extends BaseEntity {
     private String memberBirthday;
 
     @Column(name = "mem_auth")
-    private String memberAuth;
+    @Enumerated(EnumType.STRING)
+    private MilkysEnum.MemberRoleType memberAuth;
 
 
-
+    public LoginDto bringMemberInfo(){
+        return LoginDto.builder()
+                .memberCode(memberCode)
+                .memberId(memberId)
+                .memberPw(memberPw)
+                .memberName(memberName)
+                .memberNickname(memberNickname)
+                .memberBirthday(memberBirthday)
+                .memberAuth(memberAuth)
+                .build();
+    }
 
 
 }

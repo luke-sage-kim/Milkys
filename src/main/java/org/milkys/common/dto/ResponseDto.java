@@ -1,7 +1,6 @@
-package org.milkys.common.response;
+package org.milkys.common.dto;
 
 import lombok.*;
-import org.milkys.common.dto.ErrorDto;
 import org.springframework.http.HttpStatus;
 
 import java.io.Serializable;

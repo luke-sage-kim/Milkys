@@ -4,17 +4,22 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.milkys.common.MilkysEnum;
+import org.milkys.common.util.Utility;
+import org.milkys.domain.member.entity.Member;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SignupMemberDto {
+public class SignUpMemberDto {
 
-    private Long memberCode;
+
 
     @NotBlank(message = "아이디를 입력해주십시오")
     private  String memberId;
@@ -33,5 +38,17 @@ public class SignupMemberDto {
      * 권한 기본값으로 회원
      */
     private  String memberAuth;
+
+
+    public Member toEntity( ) {
+        return Member.builder()
+                .memberId(this.memberId)
+                .memberPw(this.memberPw)
+                .memberName(this.memberName)
+                .memberNickname(this.memberNickname)
+                .memberBirthday(this.memberBirthday)
+                .memberAuth(MilkysEnum.MemberRoleType.USER)
+                .build();
+    }
 
 }
