@@ -3,9 +3,13 @@ package org.milkys.domain.member.entity;
 import lombok.*;
 import org.milkys.common.MilkysEnum;
 import org.milkys.common.entity.BaseEntity;
+import org.milkys.domain.board.entity.Board;
 import org.milkys.domain.member.dto.LoginDto;
+import org.milkys.domain.music.entity.Music;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -40,6 +44,11 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MilkysEnum.MemberRoleType memberAuth;
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<Board> boards = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<Music> musics = new ArrayList<>();
 
     public LoginDto bringMemberInfo(){
         return LoginDto.builder()

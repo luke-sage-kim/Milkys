@@ -1,5 +1,6 @@
 package org.milkys.domain.member.controller;
 
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.milkys.common.dto.ResponseDto;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.Arrays;
@@ -30,6 +32,9 @@ public class MemberController {
     @Autowired
     private HttpSession session; // HttpSession 객체를 주입받음
 
+    @ApiOperation(
+            value = "회원 가입하기"
+            , notes = "화면에서 입력받은 회원정보 멤버테이블에 삽입")
     @PostMapping(value = "/v1/sign")
     public ResponseDto signUp(@Valid @ModelAttribute("member") SignUpMemberDto requestDto, BindingResult errors, Model model) {
         /**
@@ -65,19 +70,35 @@ public class MemberController {
  * memberService.validateHandling(errors): 사용자 정의 검증 로직을 사용하여 추가적인 에러 메시지를 처리합니다.
  * for (String key : validatorResult.keySet()): validatorResult에 담긴 에러 메시지를 model에 추가합니다. 이는 뷰에서 에러 메시지를 표시하는 데 사용됩니다.
  */
+    @ApiOperation(
+            value = "로그인"
+            , notes = "화면에서 입력받은 id와 pw를 멤버테이블에서 조회후 일치시 세션으로 전송 ")
+    @PostMapping("/v1/login")
+    public ResponseEntity login(@RequestParam String id, @RequestParam String pw) {
+        ResponseDto response;
 
-@PostMapping("/v1/login")
-public ResponseEntity login(@RequestParam String email, @RequestParam String passwd) {
-    ResponseDto response;
-
-    // 회원 로그인 서비스 호출
-    try {
-        response = memberService.login(email, passwd);
-    }catch(Exception e ){
-        log.info(e.getMessage());
-        response = new ResponseDto("로그인에 실패하였습니다. 다시 시도해주세요.", HttpStatus.NOT_FOUND.value());
+        // 회원 로그인 서비스 호출
+        try {
+            response = memberService.login(id, pw);
+        }catch(Exception e ){
+            log.info(e.getMessage());
+            response = new ResponseDto("로그인에 실패하였습니다. 다시 시도해주세요.", HttpStatus.NOT_FOUND.value());
+        }
+        return new ResponseEntity<ResponseDto<?>>(response,HttpStatus.OK);
     }
-    return new ResponseEntity<ResponseDto<?>>(response,HttpStatus.OK);
-}
+    @ApiOperation(
+            value = "로그아웃"
+            , notes = "세션제거 ")
+    @PostMapping("/v1/logout")
+    public ResponseDto logoutMember(HttpServletRequest request) {
+
+        request.getSession().invalidate();
+
+        ResponseDto response = new ResponseDto("로그아웃 되었습니다.", HttpStatus.OK.value());
+        return response;
+    }
+
+
+
 
 }
