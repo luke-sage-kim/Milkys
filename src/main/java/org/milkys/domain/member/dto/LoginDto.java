@@ -15,11 +15,6 @@ import javax.persistence.Enumerated;
 @Builder
 
 public class LoginDto {
-    private Long memberCode;
     private String memberId;
     private String memberPw;
-    private String memberName;
-    private String memberNickname;
-    private String memberBirthday;
-    private MilkysEnum.MemberRoleType memberAuth;
 }

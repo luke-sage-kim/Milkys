@@ -2,7 +2,7 @@ package org.milkys.config;
 
 import lombok.*;
 import org.milkys.common.MilkysEnum;
-import org.milkys.domain.member.dto.LoginDto;
+import org.milkys.domain.member.dto.MemberDto;
 
 import java.io.Serializable;
 
@@ -20,7 +20,7 @@ public class SessionUser implements Serializable {
     private String memberBirthday;
     private MilkysEnum.MemberRoleType memberAuth;
 
-    public SessionUser(LoginDto memberInfo){
+    public SessionUser(MemberDto memberInfo){
         this.memberCode = memberInfo.getMemberCode();
         this.memberId = memberInfo.getMemberId();
         this.memberPw = memberInfo.getMemberPw();

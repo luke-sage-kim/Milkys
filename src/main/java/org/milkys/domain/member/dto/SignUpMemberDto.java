@@ -18,7 +18,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SignUpMemberDto {
-
+    /**
+     * 화면에서 회원가입정보들 받는 DTO
+     */
 
 
     @NotBlank(message = "아이디를 입력해주십시오")

@@ -4,7 +4,11 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.milkys.common.dto.ResponseDto;
+import org.milkys.config.SessionUser;
+import org.milkys.domain.member.dto.LoginDto;
+import org.milkys.domain.member.dto.SelectMemberDto;
 import org.milkys.domain.member.dto.SignUpMemberDto;
+import org.milkys.domain.member.dto.UpdateMemberDto;
 import org.milkys.domain.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,15 +16,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -74,12 +76,12 @@ public class MemberController {
             value = "로그인"
             , notes = "화면에서 입력받은 id와 pw를 멤버테이블에서 조회후 일치시 세션으로 전송 ")
     @PostMapping("/v1/login")
-    public ResponseEntity login(@RequestParam String id, @RequestParam String pw) {
+    public ResponseEntity login(LoginDto loginDto) {
         ResponseDto response;
 
         // 회원 로그인 서비스 호출
         try {
-            response = memberService.login(id, pw);
+            response = memberService.login(loginDto.getMemberId(), loginDto.getMemberPw());
         }catch(Exception e ){
             log.info(e.getMessage());
             response = new ResponseDto("로그인에 실패하였습니다. 다시 시도해주세요.", HttpStatus.NOT_FOUND.value());
@@ -98,7 +100,33 @@ public class MemberController {
         return response;
     }
 
+    @ApiOperation(
+            value = "회원 목록가져오기"
+            , notes = "멤버테이블에서 모든회원정보 가져오기")
+    @GetMapping(value = "/v1/memberList")
+    public ResponseDto<List<SelectMemberDto>> selectAllMember( ) {
+        return memberService.selectAllMember();
+    }
 
+    @ApiOperation(
+            value = "회원정보 수정하기"
+            , notes = "멤버테이블에서 모든회원정보 가져오기")
+    @PutMapping(value = "/v1/memberUpdate")
+    public ResponseDto  updateMember(UpdateMemberDto request
+    ) {
+
+        SessionUser loggedInUser = (SessionUser) session.getAttribute("loggedInUser");
+        Long memberCode = loggedInUser.getMemberCode();
+        return new ResponseDto(memberService.updateMember(request,memberCode));
+    }
+
+    //회원탈퇴
+    @DeleteMapping(value = "/v1/memberDelete")
+    public ResponseDto deleteMember(){
+        SessionUser loggedInUser = (SessionUser) session.getAttribute("loggedInUser");
+        Long memberCode = loggedInUser.getMemberCode();
+        return new ResponseDto (memberService.deleteMember(memberCode));
+    }
 
 
 }

@@ -5,6 +5,8 @@ import org.milkys.common.MilkysEnum;
 import org.milkys.common.entity.BaseEntity;
 import org.milkys.domain.board.entity.Board;
 import org.milkys.domain.member.dto.LoginDto;
+import org.milkys.domain.member.dto.MemberDto;
+import org.milkys.domain.member.dto.UpdateMemberDto;
 import org.milkys.domain.music.entity.Music;
 
 import javax.persistence.*;
@@ -50,8 +52,8 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true,fetch = FetchType.LAZY)
     private List<Music> musics = new ArrayList<>();
 
-    public LoginDto bringMemberInfo(){
-        return LoginDto.builder()
+    public MemberDto bringMemberInfo(){
+        return MemberDto.builder()
                 .memberCode(memberCode)
                 .memberId(memberId)
                 .memberPw(memberPw)
@@ -63,4 +65,8 @@ public class Member extends BaseEntity {
     }
 
 
-}
+
+    }
+
+
+
