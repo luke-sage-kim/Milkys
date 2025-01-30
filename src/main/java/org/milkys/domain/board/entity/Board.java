@@ -12,6 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Table(name = "board_table")
 public class Board extends BaseEntity {
 
     @Id
@@ -35,6 +36,6 @@ public class Board extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mem_code")
-    private Member memberCode;
+    private Member member;
 
 }

@@ -12,6 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Table(name = "music_table")
 public class Music extends BaseEntity {
 
     @Id
@@ -33,5 +34,5 @@ public class Music extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mem_code")
-    private Member memberCode;
+    private Member member;
 }

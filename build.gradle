@@ -1,30 +1,11 @@
-buildscript {
-    ext {
-        queryDslVersion = "5.0.0"
-    }
-}
-
-
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '2.7.13'
+    id 'org.springframework.boot' version '2.6.13'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
-    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
 
-group = 'com.studyProject'
-version = '0.0.1-SNAPSHOT'
-
-
-java {
-    sourceCompatibility = '11'
-}
-
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
+group = 'org.example'
+version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -32,51 +13,19 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springdoc:springdoc-openapi-ui:1.6.11'
-    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
     compileOnly 'org.projectlombok:lombok'
-//    runtimeOnly 'com.mysql:mysql-connector-j'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'mysql:mysql-connector-java'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    //querydsl 추가
-    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
-    annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
-    implementation 'org.springframework.security:spring-security-crypto:5.7.1'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation group: 'commons-io', name: 'commons-io', version: '2.6'
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    implementation 'org.webjars:sockjs-client:1.5.1'
-    implementation 'org.webjars:stomp-websocket:2.3.4'
-    implementation 'com.google.code.gson:gson:2.9.0'
-
-    runtimeOnly 'com.h2database:h2'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.6'
     implementation 'io.springfox:springfox-swagger2:2.9.2'
     implementation 'io.springfox:springfox-swagger-ui:2.9.2'
-
+    implementation 'org.springframework.security:spring-security-crypto:5.7.1'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
-tasks.named('test') {
+test {
     useJUnitPlatform()
 }
-//querydsl 추가 시작 (위에 plugin 추가 부분과 맞물림)
-def querydslDir = "$buildDir/generated/querydsl"
-querydsl {
-    jpa = true
-    querydslSourcesDir = querydslDir
-}
-
-sourceSets { // IDE의 소스 폴더에 자동으로 넣어준다.
-    main.java.srcDir querydslDir
-}
-
-configurations {
-    querydsl.extendsFrom compileClasspath // 컴파일이 될때 같이 수행
-}
-
-compileQuerydsl {
-    options.annotationProcessorPath = configurations.querydsl // Q파일을 생성해준다.
-}
-//querydsl 추가 끝
