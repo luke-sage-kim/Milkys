@@ -5,13 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.milkys.common.MilkysEnum;
-import org.milkys.common.util.Utility;
 import org.milkys.domain.member.entity.Member;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import java.util.UUID;
 
 @Getter
 @Setter

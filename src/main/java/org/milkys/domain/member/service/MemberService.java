@@ -8,6 +8,7 @@ import org.milkys.domain.member.entity.Member;
 import org.milkys.domain.member.repository.MemberRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 
@@ -31,11 +32,26 @@ public class MemberService {
      * @return
      */
     public ResponseDto memberInfoSave(SignUpMemberDto signUpMemberDto) {
+        //여기서 데이터 검증
+        String error = createUserVaildation(signUpMemberDto);
+        if(StringUtils.hasText(error)) return new ResponseDto(error, HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+
         Member member = signUpMemberDto.toEntity();
         Member savedMember = memberRepository.save(member);
         if(savedMember != null) {
             return new ResponseDto("회원가입이 성공했습니다.", HttpStatus.OK.value());
         } else return new ResponseDto("회원가입을 실패했습니다", HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    private String createUserVaildation(SignUpMemberDto signUpMemberDto) {
+        if(!StringUtils.hasText(signUpMemberDto.getMemberId())){
+            return "ID가 공백입니다.";
+        }
+        if(!StringUtils.hasText(signUpMemberDto.getMemberPw())){
+            return "비밀번호가 입력되지 않았습니다.";
+        }
+        return null;
     }
 
     //회원가입 시 유효성 검사

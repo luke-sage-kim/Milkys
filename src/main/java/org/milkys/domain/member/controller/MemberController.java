@@ -10,7 +10,6 @@ import org.milkys.domain.member.dto.SelectMemberDto;
 import org.milkys.domain.member.dto.SignUpMemberDto;
 import org.milkys.domain.member.dto.UpdateMemberDto;
 import org.milkys.domain.member.service.MemberService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -28,37 +27,23 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/")
 public class MemberController {
-    private final MemberService memberService;
 
-    @Autowired
-    private HttpSession session; // HttpSession 객체를 주입받음
+    private final MemberService memberService;
+    private final HttpSession session; // HttpSession 객체를 주입받음
+
+    @PostMapping("/test")
+    public ResponseDto test(){
+        return new ResponseDto("테스트",200);
+    }
 
     @ApiOperation(
             value = "회원 가입하기"
             , notes = "화면에서 입력받은 회원정보 멤버테이블에 삽입")
     @PostMapping(value = "/v1/sign")
-    public ResponseDto signUp(@Valid @ModelAttribute("member") SignUpMemberDto requestDto, BindingResult errors, Model model) {
-        /**
-         * 웹에서 받아온 데이터에 에러존재시처리로직
-         */
-        if (errors.hasErrors()) {
-            for (ObjectError error : errors.getAllErrors()) {
-                log.info("Object name: {}", error.getObjectName());
-                log.info("Error message: {}", error.getDefaultMessage());
-                log.info("Error codes: {}", Arrays.toString(error.getCodes()));
-            }
-
-            model.addAttribute("member", requestDto);
-            Map<String, String> validatorResult = memberService.validateHandling(errors);
-
-            for (String key : validatorResult.keySet()) {
-                model.addAttribute(key, validatorResult.get(key));
-            }
-        }
-
+    public ResponseDto signUp(@Valid @RequestBody SignUpMemberDto requestDto) {
         return memberService.memberInfoSave(requestDto);
-
     }
 /**
  * @Valid @ModelAttribute("member") SignUpMemberDto requestDto: 클라이언트가 전송한 데이터를 SignUpMemberDto 객체로 바인딩하고 유효성 검사를 수행합니다.
