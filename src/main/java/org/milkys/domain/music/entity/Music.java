@@ -25,7 +25,7 @@ public class Music extends BaseEntity {
 
     @Column(name = "mu_content")
     private String content;
-
+    //좋아요 테이블 만들어서 누를때 좋아요 갯수 합을 반영해도될듯
     @Column(name = "mu_like")
     private int like;
 
@@ -35,4 +35,21 @@ public class Music extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mem_code")
     private Member member;
+
+    public void updateMusicInfo(String title, String content) {
+        if (title != null) {
+            this.title = title;
+        }
+        if (content != null) {
+            this.content = content;
+        }
+    }
+
+    public void promoteStatus() {
+        this.status = MilkysEnum.MusicStatus.SETLIST;
+    }
+
+    public void demoteStatus() {
+        this.status = MilkysEnum.MusicStatus.SHARE;
+    }
 }

@@ -26,10 +26,21 @@ public class Gallery extends BaseEntity {
     @Column(name = "gal_content")
     private String content;
 
+    @Column(name = "gal__cnt")
+    private int viewCnt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mem_code")
     private Member member;
 
+    public void updateGalleryInfo(String title, String content) {
+        if (title != null) {
+            this.title = title;
+        }
+        if (content != null) {
+            this.content = content;
+        }
+    }
 }
 
 

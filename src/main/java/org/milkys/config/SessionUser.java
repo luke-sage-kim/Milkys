@@ -5,6 +5,7 @@ import org.milkys.common.MilkysEnum;
 import org.milkys.domain.member.dto.MemberDto;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @Getter
 @Setter

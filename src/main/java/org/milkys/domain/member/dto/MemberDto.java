@@ -4,6 +4,8 @@ import lombok.*;
 import org.milkys.common.MilkysEnum;
 import org.milkys.domain.member.entity.Member;
 
+import java.util.Date;
+
 @Setter
 @Getter
 @ToString
@@ -21,12 +23,21 @@ public class MemberDto {
     private String memberName;
     private String memberNickname;
     private String memberBirthday;
+    private String memberPhoneNumber;
     private MilkysEnum.MemberRoleType memberAuth;
 
     public Member toUpdateEntity(){
         return Member.builder()
                 .memberPw(memberPw)
                 .memberNickname(memberNickname)
+                .memberPhoneNumber(memberPhoneNumber)
+                .build();
+    }
+
+    public Member toInitailizePw(){
+        return Member.builder()
+                .memberCode(memberCode)
+                .memberPw("0618")
                 .build();
     }
 

@@ -11,6 +11,7 @@ import org.milkys.domain.music.entity.Music;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -43,6 +44,9 @@ public class Member extends BaseEntity {
     @Column(name = "mem_birth")
     private String memberBirthday;
 
+    @Column(name = "mem_phone")
+    private String memberPhoneNumber;
+
     @Column(name = "mem_auth")
     @Enumerated(EnumType.STRING)
     private MilkysEnum.MemberRoleType memberAuth;
@@ -65,9 +69,25 @@ public class Member extends BaseEntity {
                 .build();
     }
 
-
-
+    public void initializePassword() {
+        this.memberPw = "0618";
     }
+
+    public void updateMemberInfo(String memberPw, String memberNickname, String memberPhoneNumber, String memberBirthday) {
+        if (memberPw != null) {
+            this.memberPw = memberPw;
+        }
+        if (memberNickname != null) {
+            this.memberNickname = memberNickname;
+        }
+        if (memberPhoneNumber != null) {
+            this.memberPhoneNumber = memberPhoneNumber;
+        }
+        if (memberBirthday != null) {
+            this.memberBirthday = memberBirthday;
+        }
+    }
+}
 
 
 

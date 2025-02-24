@@ -2,11 +2,16 @@ package org.milkys.domain.member.repository;
 
 import org.milkys.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
-    Member findByMemberId(String id);
+    @Query(value = "select * from member_table where mem_id = :id", nativeQuery = true)
+    Member findByMemberId(@Param("id") String id);
+    @Query(value = "select * from member_table where mem_name = :memberName and mem_phone = :memberPhoneNumber", nativeQuery = true)
+    Member findByMemberNameAndPhoneNum(String memberName, String memberPhoneNumber);
 }
 
 /**
@@ -22,4 +27,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
  * Member 엔티티에서 ID로 표시한게 memberCode니까
  * memberCode의 자료타입을 표시함
  * 즉, Member 엔티티의 ID가 Long 타입임을 의미합니다.
+ *
+ *
  */

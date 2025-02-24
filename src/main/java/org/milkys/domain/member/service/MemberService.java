@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+
     private final HttpSession session;
 
     /**
@@ -35,9 +36,8 @@ public class MemberService {
         //여기서 데이터 검증
         String error = createUserVaildation(signUpMemberDto);
         if(StringUtils.hasText(error)) return new ResponseDto(error, HttpStatus.INTERNAL_SERVER_ERROR.value());
-
-
         Member member = signUpMemberDto.toEntity();
+
         Member savedMember = memberRepository.save(member);
         if(savedMember != null) {
             return new ResponseDto("회원가입이 성공했습니다.", HttpStatus.OK.value());
@@ -51,6 +51,12 @@ public class MemberService {
         if(!StringUtils.hasText(signUpMemberDto.getMemberPw())){
             return "비밀번호가 입력되지 않았습니다.";
         }
+        Member member = signUpMemberDto.toEntity();
+        Member checkMemberId = memberRepository.findByMemberId(member.getMemberId());
+        if(checkMemberId !=null){
+            return "아이디가 중복입니다.";
+        }
+
         return null;
     }
 
@@ -101,8 +107,9 @@ public class MemberService {
         try {
         //멤버 테이블 리스트객체로 담아옴
         List<Member> members = memberRepository.findAll();
-        List<SelectMemberDto> selectMemberDtos = members.stream().map(SelectMemberDto::new).collect(Collectors.toList());
-
+            List<SelectMemberDto> selectMemberDtos = members.stream()
+                    .map(SelectMemberDto::fromMember)  // fromMember 메서드를 사용
+                    .collect(Collectors.toList());
         /**
          * map 메서드는 스트림의 각 요소를 변환하는 함수적 인터페이스를 적용합니다.
          * 여기서는 SelectMemberDto::new를 사용하여 각 Member 객체를 SelectMemberDto 객체로 변환합니다.
@@ -126,19 +133,20 @@ public class MemberService {
     }
 
 
-    public ResponseDto updateMember(UpdateMemberDto request, Long memberCode) {
+    public ResponseDto updateMember(UpdateMemberDto updateMemberDto, Long memberCode) {
         Optional<Member> memberOptional = memberRepository.findById(memberCode);
         if (!memberOptional.isPresent()) {
             // 해당 회원이 존재하지 않는 경우 에러 응답을 반환합니다.
             return new ResponseDto("존재하지 않는 회원입니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
         Member member = memberOptional.get();
-        MemberDto memberDto = member.bringMemberInfo();
-
-        memberDto.setMemberPw(request.getMemberPw());
-        memberDto.setMemberNickname(request.getMemberNickname());
-
-        memberRepository.save(memberDto.toUpdateEntity());
+        member.updateMemberInfo(
+                updateMemberDto.getMemberPw(),
+                updateMemberDto.getMemberNickname(),
+                updateMemberDto.getMemberPhoneNumber(),
+                updateMemberDto.getMemberBirthday()
+        );
+        memberRepository.save(member);
 
         return new ResponseDto("회원 정보가 업데이트되었습니다.", HttpStatus.OK.value());
     }
@@ -155,5 +163,19 @@ public class MemberService {
         else {
             return new ResponseDto("회원탈퇴 실패", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
+    }
+
+    public ResponseDto<MemberDto> findMemberId(FindIdDto findIdDto) {
+        Member member = memberRepository.findByMemberNameAndPhoneNum(findIdDto.getMemberName(), findIdDto.getMemberPhoneNumber());
+
+        return new ResponseDto(member.getMemberId(), HttpStatus.OK.value());
+    }
+
+    public ResponseDto<MemberDto> initalMemberPw(InitialPwDto initialPwDto) {
+        Member member = memberRepository.findByMemberId(initialPwDto.getMemberId());
+        member.initializePassword();  // 비밀번호 초기화
+        // 변경된 회원 정보 저장
+        memberRepository.save(member);
+        return new ResponseDto("비밀번호가 초기화 되었습니다.", HttpStatus.OK.value());
     }
 }

@@ -15,4 +15,6 @@ public class UpdateMemberDto {
      */
     private String memberPw;
     private String memberNickname;
+    private String memberBirthday;
+    private String memberPhoneNumber;
 }

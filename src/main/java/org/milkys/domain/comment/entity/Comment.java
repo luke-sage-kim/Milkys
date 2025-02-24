@@ -24,14 +24,19 @@ public class Comment extends BaseEntity {
     @Column(name = "com_content")
     private String content;
 
-    @Column(name = "com_parent")
-    private MilkysEnum.CommentParent parent;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "parent_type")
+    private MilkysEnum.CommentParent parentType;  // 'board' 또는 'gallery'
 
-    @Column(name = "com_parentId")
-    private Long parentId;
-
+    @Column(name = "parent_id")
+    private long parent;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mem_code")
     private Member member;
+
+
+    public void updateComment(String content) {
+        this.content = content;
+    }
 }

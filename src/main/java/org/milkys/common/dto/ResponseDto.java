@@ -26,7 +26,7 @@ public class ResponseDto<T> implements Serializable {
     private Long ResultCount;
     private int status;
     private ErrorDto error;
-
+    private String message;
     /**
      * 다양한 생성자들
      */
@@ -44,6 +44,12 @@ public class ResponseDto<T> implements Serializable {
     public ResponseDto(ErrorDto errorDto){
         this.ResultData = null;
         this.error = errorDto;
+    }
+
+    // 새로운 생성자 추가: String message, HttpStatus status 받기
+    public ResponseDto(String message, HttpStatus status) {
+        this.message = message;
+        this.status = status.value();
     }
 
 
