@@ -5,7 +5,8 @@ public class MilkysEnum {
     public enum MemberRoleType {
         ADMIN,
         USER,
-        LOCAMANAGER
+        LOCAMANAGER,
+        LEADER
     }
 
     public enum BoardType {

@@ -26,7 +26,7 @@ public class Gallery extends BaseEntity {
     @Column(name = "gal_content")
     private String content;
 
-    @Column(name = "gal__cnt")
+    @Column(name = "gal_cnt")
     private int viewCnt;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,6 +1,8 @@
 package org.milkys.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Session;
+import org.milkys.common.MilkysEnum;
 import org.milkys.common.dto.ResponseDto;
 import org.milkys.config.SessionUser;
 import org.milkys.domain.member.dto.*;
@@ -177,5 +179,34 @@ public class MemberService {
         // 변경된 회원 정보 저장
         memberRepository.save(member);
         return new ResponseDto("비밀번호가 초기화 되었습니다.", HttpStatus.OK.value());
+    }
+
+    public ResponseDto changeMememberAuth(Long id, String memberAuth, HttpSession session) {
+        String auth = (String) session.getAttribute("memberAuth");
+        if(!memberAuth.equals(MilkysEnum.MemberRoleType.ADMIN)
+        ){
+            return new ResponseDto<>("관리자만 회원권한을 수정할 수 있습니다.", HttpStatus.UNAUTHORIZED);
+        }
+        Optional<Member> memberOptional = memberRepository.findById(id);
+        if(memberOptional.isPresent()){
+            Member member = memberOptional.get();
+            member.changeMememberAuth(memberAuth);
+            memberRepository.save(member);
+            return new ResponseDto("회원등급이 수정되었습니다.", HttpStatus.OK.value());
+        }else {
+            return new ResponseDto<>("회원이 존재하지않습니다.", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    public ResponseDto changeMememberToAdmin(Long id) {
+        Optional<Member> memberOptional = memberRepository.findById(id);
+        if(memberOptional.isPresent()){
+            Member member = memberOptional.get();
+            member.changeMememberAuth("ADMIN");
+            memberRepository.save(member);
+            return new ResponseDto("관리자로 지정되었습니다.", HttpStatus.OK.value());
+        }else {
+            return new ResponseDto<>("회원이 존재하지않습니다.", HttpStatus.UNAUTHORIZED);
+        }
     }
 }

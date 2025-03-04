@@ -87,6 +87,12 @@ public class Member extends BaseEntity {
             this.memberBirthday = memberBirthday;
         }
     }
+
+    public void changeMememberAuth(String memberAuth) {
+        if (memberAuth != null) {
+            this.memberAuth = MilkysEnum.MemberRoleType.valueOf(memberAuth);
+        }
+    }
 }
 
 

@@ -3,6 +3,7 @@ package org.milkys.domain.member.controller;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.milkys.common.MilkysEnum;
 import org.milkys.common.dto.ResponseDto;
 import org.milkys.config.SessionUser;
 import org.milkys.domain.comment.service.CommentService;
@@ -134,5 +135,21 @@ public class MemberController {
 
         return new ResponseDto (memberService.initalMemberPw(initialPwDto));
     }
+    @ApiOperation(
+            value = "회원 권한 수정"
+            , notes = "관리자가 회원 권한 수정")
+    @PutMapping("/v1/auth")
+    public ResponseDto changeMememberAuth(@RequestBody Long id, @RequestBody String memberAuth, HttpSession session ) {
 
+        return new ResponseDto (memberService.changeMememberAuth(id,memberAuth,session));
+    }
+
+    @ApiOperation(
+            value = "회원 관리자임명"
+            , notes = "관리자가 회원 권한 수정")
+    @PutMapping("/v1/admin")
+    public ResponseDto changeMememberToAdmin(@RequestBody Long id ) {
+
+        return new ResponseDto (memberService.changeMememberToAdmin(id));
+    }
 }
