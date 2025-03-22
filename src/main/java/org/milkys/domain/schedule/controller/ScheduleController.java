@@ -79,7 +79,15 @@ public class ScheduleController {
     public ResponseDto deleteschedule(@PathVariable Long id){
         return new ResponseDto (scheduleService.deleteschedule(id));
     }
-
+//    @ApiOperation(
+//            value = "가장 최신 스케줄 가져오기"
+//            , notes = "일정에있는 날짜중 가장 최신에 해당하는 글 정보가져오기")
+//    @GetMapping(value = "/v1/recent")
+//    public ResponseDto <SelectScheduleDto> getRecent() {
+//
+//        return scheduleService.getRecent();
+//
+//    }
 
 
 }

@@ -1,0 +1,42 @@
+.find-id-page {
+    width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+.find-id-page h2 {
+    text-align: center;
+}
+
+.find-id-page form {
+    display: flex;
+    flex-direction: column;
+}
+
+.find-id-page input {
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.find-id-page button {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.find-id-page button:disabled {
+    background-color: #ddd;
+}
+
+.find-id-page p {
+    text-align: center;
+    font-weight: bold;
+    color: red;
+}

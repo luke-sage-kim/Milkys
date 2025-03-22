@@ -14,9 +14,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,13 +50,16 @@ public class MemberController {
     @PostMapping("/v1/login")
     public ResponseEntity login(@RequestBody LoginDto loginDto) {
         ResponseDto response;
-
+        Map<String, String> sessionData = new HashMap<>();
         // 회원 로그인 서비스 호출
         try {
             response = memberService.login(loginDto.getMemberId(), loginDto.getMemberPw());
             // 로그인 성공 시 세션에 사용자 ID 저장
             if (response.getStatus() == HttpStatus.OK.value()) {
                 session.setAttribute("memberId", loginDto.getMemberId());  // 세션에 회원 아이디 저장
+                //원초적방법쓰자 memberDTO다 세팅
+                MemberDto memberDto = memberService.getMemberDto(loginDto.getMemberId());
+                response.setResultData(memberDto);
             }
         }catch(Exception e ){
             log.info(e.getMessage());
@@ -68,7 +74,7 @@ public class MemberController {
     public ResponseDto logoutMember(HttpServletRequest request) {
 
         request.getSession().invalidate();
-
+        System.out.println("로그아웃성공");
         ResponseDto response = new ResponseDto("로그아웃 되었습니다.", HttpStatus.OK.value());
         return response;
     }
@@ -103,25 +109,37 @@ public class MemberController {
         return new ResponseDto (memberService.deleteMember(memberCode));
     }
 
-    @ApiOperation(
-            value = "세션 조회"
-            , notes = "현재 로그인된 사용자의 세션 정보를 조회합니다.")
     @GetMapping("/v1/session")
-    public ResponseEntity getSessionInfo(HttpSession session) {
-        String memberId = (String) session.getAttribute("memberId");
+    public ResponseEntity<String> getSessionInfo(HttpSession session, HttpServletResponse response) {
+        // 세션에서 사용자 정보 조회
+        SessionUser sessionUser = (SessionUser) session.getAttribute("loggedInUser");
 
-        if (memberId == null) {
+        if (sessionUser == null) {
             return new ResponseEntity<>("로그인된 사용자가 없습니다.", HttpStatus.UNAUTHORIZED);
         }
 
-        // 세션에서 다른 정보들도 조회 가능 (예: 권한 정보)
-        return new ResponseEntity<>("로그인된 사용자 ID: " + memberId, HttpStatus.OK);
+        // 세션에서 사용자 정보 출력
+        StringBuilder userInfo = new StringBuilder("로그인된 사용자 정보: ");
+        userInfo.append("memberCode=").append(sessionUser.getMemberCode()).append(", ");
+        userInfo.append("memberId=").append(sessionUser.getMemberId()).append(", ");
+        userInfo.append("memberPw=").append(sessionUser.getMemberPw()).append(", ");
+        userInfo.append("memberName=").append(sessionUser.getMemberName()).append(", ");
+        userInfo.append("memberNickname=").append(sessionUser.getMemberNickname()).append(", ");
+        userInfo.append("memberBirthday=").append(sessionUser.getMemberBirthday()).append(", ");
+        userInfo.append("memberPhoneNumber=").append(sessionUser.getMemberPhoneNumber()).append(", ");
+        userInfo.append("memberAuth=").append(sessionUser.getMemberAuth());
+
+        // 세션 쿠키 설정
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+
+        return new ResponseEntity<>(userInfo.toString(), HttpStatus.OK);
     }
 
     @ApiOperation(
             value = "아이디 찾기"
             , notes = "입력받은 이름과 생년월일로 아이디를조회합니다")
-    @GetMapping("/v1/findId")
+    @PostMapping("/v1/findId")
     public ResponseDto findMemberId(@RequestBody FindIdDto findIdDto ) {
 
         return new ResponseDto (memberService.findMemberId(findIdDto));

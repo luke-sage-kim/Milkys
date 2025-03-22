@@ -169,16 +169,24 @@ public class MemberService {
 
     public ResponseDto<MemberDto> findMemberId(FindIdDto findIdDto) {
         Member member = memberRepository.findByMemberNameAndPhoneNum(findIdDto.getMemberName(), findIdDto.getMemberPhoneNumber());
-
+        if(member.getMemberId() ==null){
+            return new ResponseDto("이름 또는 전화번호를 잘못기입하셨습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
         return new ResponseDto(member.getMemberId(), HttpStatus.OK.value());
     }
 
     public ResponseDto<MemberDto> initalMemberPw(InitialPwDto initialPwDto) {
         Member member = memberRepository.findByMemberId(initialPwDto.getMemberId());
+        if(member == null){
+            return new ResponseDto("idError", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+        if(!member.getMemberBirthday().equals(initialPwDto.getMemberBirthday())){
+            return new ResponseDto("birthError", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
         member.initializePassword();  // 비밀번호 초기화
         // 변경된 회원 정보 저장
         memberRepository.save(member);
-        return new ResponseDto("비밀번호가 초기화 되었습니다.", HttpStatus.OK.value());
+        return new ResponseDto("success.", HttpStatus.OK.value());
     }
 
     public ResponseDto changeMememberAuth(Long id, String memberAuth, HttpSession session) {
@@ -208,5 +216,17 @@ public class MemberService {
         }else {
             return new ResponseDto<>("회원이 존재하지않습니다.", HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    public MemberDto getMemberDto(String id) {
+        Optional<Member> member = Optional.ofNullable(memberRepository.findByMemberId(id));
+
+        if (member.isPresent()) {
+            MemberDto memberDto = member.get().bringMemberInfo();
+            return  memberDto;
+        }else{
+            return null;
+        }
+
     }
 }

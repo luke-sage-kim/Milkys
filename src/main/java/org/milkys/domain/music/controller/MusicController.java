@@ -113,5 +113,12 @@ public class MusicController {
 
     }
 
+    @ApiOperation(
+            value = "음악 셋리스트조회"
+            , notes = "셋리스트로 선정된 음악가져오기")
+    @GetMapping(value = "/v1/setList")
+    public ResponseDto<List<SelectMusicDto>> getSetList() {
 
+        return musicService.getSetList();
+    }
 }

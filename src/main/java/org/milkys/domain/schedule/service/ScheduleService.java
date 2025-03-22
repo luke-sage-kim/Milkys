@@ -3,22 +3,17 @@ package org.milkys.domain.schedule.service;
 import lombok.RequiredArgsConstructor;
 import org.milkys.common.MilkysEnum;
 import org.milkys.common.dto.ResponseDto;
-import org.milkys.domain.member.entity.Member;
-import org.milkys.domain.member.repository.MemberRepository;
 import org.milkys.domain.schedule.dto.SelectScheduleDto;
 import org.milkys.domain.schedule.dto.UpdateScheduleDto;
 import org.milkys.domain.schedule.dto.WriteScheduleDto;
 import org.milkys.domain.schedule.entity.Schedule;
 import org.milkys.domain.schedule.repository.ScheduleRepository;
-import org.milkys.domain.scheduleVote.dto.SelectScheduleDto;
-import org.milkys.domain.scheduleVote.dto.UpdateScheduleDto;
-import org.milkys.domain.scheduleVote.dto.WriteScheduleDto;
-import org.milkys.domain.scheduleVote.entity.ScheduleVote;
-import org.milkys.domain.scheduleVote.repository.ScheduleVoteRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,7 +22,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
-    private final MemberRepository memberRepository;
     private final HttpSession session;
 
     public ResponseDto scWrite(WriteScheduleDto writeScheduleDto, HttpSession session) {
@@ -106,5 +100,24 @@ public class ScheduleService {
         scheduleRepository.save(schedule);
         return new ResponseDto("일정가 업데이트되었습니다.", HttpStatus.OK.value());
     }
-
+//    public ResponseDto<SelectScheduleDto> getRecent() {
+//        // 현재 날짜를 "yyyyMMdd" 형식으로 포맷팅
+//        LocalDate currentDate = LocalDate.now();
+//        String formattedDate = currentDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+//
+//        // 가장 가까운 스케줄 찾기
+//        Optional<Schedule> optionalSchedule = scheduleRepository.findRecentSchedule(formattedDate);
+//
+//        if (optionalSchedule.isPresent()) {
+//            // Schedule을 SelectScheduleDto로 변환
+//            Schedule schedule = optionalSchedule.get();
+//            SelectScheduleDto selectScheduleDto = SelectScheduleDto.fromSchedule(schedule);
+//
+//            // 성공 응답 반환
+//            return new ResponseDto<>(selectScheduleDto, HttpStatus.OK.value());
+//        } else {
+//            // 실패 응답 반환 (가장 가까운 스케줄이 없을 경우)
+//            return new ResponseDto("가장 가까운 스케줄이 없습니다.", HttpStatus.NOT_FOUND.value());
+//        }
+//    }
 }

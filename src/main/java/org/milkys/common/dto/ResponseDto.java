@@ -76,4 +76,5 @@ public class ResponseDto<T> implements Serializable {
     public static ResponseDto<?> ERROR(Throwable throwable, HttpStatus status){
         return new ResponseDto(ErrorDto.of(throwable, status));
     }
+
 }

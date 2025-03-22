@@ -1,0 +1,17 @@
+.my-page {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.profile-info {
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+.profile-info p {
+    margin: 8px 0;
+}
+
+.profile-info strong {
+    font-weight: bold;
+}

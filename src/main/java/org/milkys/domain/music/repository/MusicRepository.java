@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 public interface MusicRepository extends JpaRepository<Music,Long> {
     @Transactional
@@ -18,4 +20,6 @@ public interface MusicRepository extends JpaRepository<Music,Long> {
     @Modifying
     @Query(value = "update Music m set m.like= m.like-1 where m.id=:id")
     void minusLikeCnt(Long id);
+    @Query(value = "select '*' from Music m where m.status = 'SETLIST'")
+    List<Music> getSetList();
 }

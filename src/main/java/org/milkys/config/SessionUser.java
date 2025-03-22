@@ -19,6 +19,7 @@ public class SessionUser implements Serializable {
     private String memberName;
     private String memberNickname;
     private String memberBirthday;
+    private String memberPhoneNumber;
     private MilkysEnum.MemberRoleType memberAuth;
 
     public SessionUser(MemberDto memberInfo){
@@ -28,6 +29,7 @@ public class SessionUser implements Serializable {
         this.memberName = memberInfo.getMemberName();
         this.memberNickname = memberInfo.getMemberNickname();
         this.memberBirthday = memberInfo.getMemberBirthday();
+        this.memberPhoneNumber =memberInfo.getMemberPhoneNumber();
         this.memberAuth = memberInfo.getMemberAuth();
 
     }

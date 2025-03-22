@@ -146,4 +146,23 @@ public class MusicService {
             return new ResponseDto("추천 취소하였습니다.", HttpStatus.OK.value());
         }
     }
+
+
+    public ResponseDto<List<SelectMusicDto>> getSetList() {
+        try {
+            List<Music> musics = musicRepository.getSetList();
+            List<SelectMusicDto> selectmusicDtos = musics.stream()
+                    .map(SelectMusicDto::frommusic)  // fromMember 메서드를 사용
+                    .collect(Collectors.toList());
+
+            if (!selectmusicDtos.isEmpty()) {
+                return new ResponseDto(selectmusicDtos, HttpStatus.OK.value());
+            } else {
+                return new ResponseDto("가져올 데이터가 없습니다.", HttpStatus.NO_CONTENT.value());
+            }
+        } catch (Exception e) {
+            // 예외에 대한 로그 처리
+            return new ResponseDto("서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+    }
 }
