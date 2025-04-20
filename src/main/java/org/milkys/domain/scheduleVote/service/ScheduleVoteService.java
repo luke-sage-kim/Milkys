@@ -6,6 +6,7 @@ import org.milkys.domain.member.entity.Member;
 import org.milkys.domain.member.repository.MemberRepository;
 import org.milkys.domain.schedule.dto.SelectScheduleDto;
 import org.milkys.domain.schedule.dto.WriteScheduleDto;
+import org.milkys.domain.scheduleVote.dto.DeleteScvDto;
 import org.milkys.domain.scheduleVote.dto.SelectScvDto;
 import org.milkys.domain.scheduleVote.dto.UpdateScvDto;
 import org.milkys.domain.scheduleVote.dto.WriteScvDto;
@@ -26,20 +27,21 @@ import java.util.stream.Collectors;
 public class ScheduleVoteService {
     private final ScheduleVoteRepository scheduleVoteRepository;
     private final MemberRepository memberRepository;
-    private final HttpSession session;
 
-    public ResponseDto scvWrite(WriteScvDto writeScheduleVoteDto, HttpSession session) {
+    public ResponseDto scvWrite(WriteScvDto writeScheduleVoteDto, long memberCode) {
 
-        String memberId = (String) session.getAttribute("memberId");
-        if (memberId == null) {
-            return new ResponseDto<>("로그인을 해주세요.", HttpStatus.UNAUTHORIZED);
+        Optional<Member> memberOptional = memberRepository.findById(memberCode);
+        if (memberOptional.isPresent()){
+            Member member = memberOptional.get();
+            ScheduleVote scheduleVote = writeScheduleVoteDto.toEntity(member);
+            ScheduleVote ScheduleVotesave = scheduleVoteRepository.save(scheduleVote);
+            if(ScheduleVotesave != null) {
+                return new ResponseDto("일정투표작성을 완료하였습니다.", HttpStatus.OK.value());
+            } else return new ResponseDto("일정투표작성을 실패했습니다", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }else {
+            return new ResponseDto("회원이없습니다", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
-        Member member = memberRepository.findByMemberId(memberId);
-        ScheduleVote scheduleVote = writeScheduleVoteDto.toEntity(member);
-        ScheduleVote ScheduleVotesave = scheduleVoteRepository.save(scheduleVote);
-        if(ScheduleVotesave != null) {
-            return new ResponseDto("일정투표작성을 완료하였습니다.", HttpStatus.OK.value());
-        } else return new ResponseDto("일정투표작성을 실패했습니다", HttpStatus.INTERNAL_SERVER_ERROR.value());
+
     }
 
     public ResponseDto<List<SelectScvDto>> selectScheduleVoteList() {
@@ -60,18 +62,20 @@ public class ScheduleVoteService {
     }
 
     public ResponseDto<List<SelectScvDto>> scvDetail(String scvDate) {
-        Optional<ScheduleVote> optionalScheduleVote = scheduleVoteRepository.findByVoteDate(scvDate);
-        if (optionalScheduleVote.isPresent()) {
-            ScheduleVote scheduleVote = optionalScheduleVote.get();
-            SelectScvDto selectScvDto = SelectScvDto.fromScv(scheduleVote);
-            return new ResponseDto(selectScvDto, HttpStatus.OK.value());
-        }else{
-            return new ResponseDto("서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        List<SelectScvDto> selectScheduleVoteDtos = scheduleVoteRepository.findByVoteDate(scvDate).stream()
+                .map(SelectScvDto::fromScv)
+                .collect(Collectors.toList());
+        if (!selectScheduleVoteDtos.isEmpty()) {
+            return new ResponseDto(selectScheduleVoteDtos, HttpStatus.OK.value());
+        } else {
+            return new ResponseDto("가져올 데이터가 없습니다.", HttpStatus.NO_CONTENT.value());
         }
     }
 
-    public Object deleteScv(Long id) {
-        Optional<ScheduleVote> optionalScheduleVote = scheduleVoteRepository.findById(id);
+    public Object deleteScv(DeleteScvDto deleteScvDto) {
+        long memberCode = deleteScvDto.getMemberCode();
+        String scvDay = deleteScvDto.getScvDate();
+        Optional<ScheduleVote> optionalScheduleVote = scheduleVoteRepository.findByDayAndMemberCode(memberCode,scvDay);
         if (optionalScheduleVote.isPresent()) {
             ScheduleVote scheduleVote = optionalScheduleVote.get();
             scheduleVoteRepository.delete(scheduleVote);
@@ -82,8 +86,9 @@ public class ScheduleVoteService {
         }
     }
 
-    public ResponseDto updatescv(UpdateScvDto updateScvDto, Long memberCode, Long id) {
-        Optional<ScheduleVote> optionalScheduleVote = scheduleVoteRepository.findById(id);
+    public ResponseDto updatescv(UpdateScvDto updateScvDto, Long memberCode) {
+        String scvDay = updateScvDto.getScvDate();
+        Optional<ScheduleVote> optionalScheduleVote = scheduleVoteRepository.findByDayAndMemberCode(memberCode,scvDay);
         if (!optionalScheduleVote.isPresent()) {
             // 해당 회원이 존재하지 않는 경우 에러 응답을 반환합니다.
             return new ResponseDto("존재하지 않는 게시물입니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());

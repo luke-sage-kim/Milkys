@@ -10,11 +10,9 @@ import org.milkys.domain.board.entity.Board;
 @AllArgsConstructor
 @Builder
 public class UpdateBoardDto {
+    private long memberCode;
     private String title;
     private String content;
     private MilkysEnum.BoardType boardType;
-
-
-
 
 }

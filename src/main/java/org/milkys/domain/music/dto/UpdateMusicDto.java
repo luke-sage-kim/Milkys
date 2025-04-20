@@ -10,16 +10,11 @@ import org.milkys.domain.music.entity.Music;
 @AllArgsConstructor
 @Builder
 public class UpdateMusicDto {
+    private Long memberCode;
     private String title;
     private String content;
+    private String musicLink;
 
-
-    public static UpdateMusicDto fromGallery(Music music) {
-        return UpdateMusicDto.builder()
-                .title(music.getTitle())
-                .content(music.getContent())
-                .build();
-    }
 
 
 }

@@ -88,17 +88,17 @@ public class GalleryController {
         return new ResponseDto (galleryService.deleteGallery(id));
     }
 
-    @ApiOperation(
-            value = "갤러리댓글 작성"
-            , notes = "화면에서 입력받은 글정보 작성")
-    @PostMapping(value = "/v1/{id}/comment")
-    public ResponseDto galleryCommentWrite(@Valid @RequestBody WriteCommentDto writeCommentDto,@PathVariable Long id, HttpSession session) {
-        SessionUser loggedInUser = (SessionUser) session.getAttribute("loggedInUser");
-        Long memberCode = loggedInUser.getMemberCode();
-
-        return commentService.commentWrite(writeCommentDto,id,memberCode, MilkysEnum.CommentParent.GALLERY);
-
-    }
+//    @ApiOperation(
+//            value = "갤러리댓글 작성"
+//            , notes = "화면에서 입력받은 글정보 작성")
+//    @PostMapping(value = "/v1/{id}/comment")
+//    public ResponseDto galleryCommentWrite(@Valid @RequestBody WriteCommentDto writeCommentDto,@PathVariable Long id, HttpSession session) {
+//        SessionUser loggedInUser = (SessionUser) session.getAttribute("loggedInUser");
+//        Long memberCode = loggedInUser.getMemberCode();
+//
+//        return commentService.commentWrite(writeCommentDto,id,memberCode, MilkysEnum.CommentParent.GALLERY);
+//
+//    }
 
 
 }

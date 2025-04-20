@@ -15,6 +15,7 @@ import javax.persistence.Column;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WriteScvDto {
+    private long memberCode;
     private String scvDate;
     private String scvStart;
     private String scvEnd;

@@ -34,9 +34,9 @@ public class BoardController {
             value = "게시글 작성"
             , notes = "화면에서 입력받은 글정보 작성")
     @PostMapping(value = "/v1/write")
-    public ResponseDto boardWrite(@Valid @RequestBody WriteBoardDto requestDto, HttpSession session) {
-
-        return boardService.boardWrite(requestDto,session);
+    public ResponseDto boardWrite(@Valid @RequestBody WriteBoardDto requestDto) {
+        Long memberCode =requestDto.getMemberCode();
+        return boardService.boardWrite(requestDto,memberCode);
 
     }
 
@@ -50,7 +50,7 @@ public class BoardController {
 
     }
     @ApiOperation(
-            value = "게시글 전체조회"
+            value = "게시글 상세조회"
             , notes = "게시판테이블에있는 전체데이터조회 조회시 조회수 증가")
     @GetMapping(value = "/v1/{id}")
     public ResponseDto<List<SelectBoardDto>> boardDetail(@PathVariable Long id) {
@@ -64,8 +64,7 @@ public class BoardController {
     @PutMapping(value = "/v1/{id}")
     public ResponseDto  updateBoard(@RequestBody UpdateBoardDto updateBoardDto, @PathVariable Long id ) {
 
-        SessionUser loggedInUser = (SessionUser) session.getAttribute("loggedInUser");
-        Long memberCode = loggedInUser.getMemberCode();
+        Long memberCode =updateBoardDto.getMemberCode();
 
         return new ResponseDto(boardService.updateBoard(updateBoardDto,memberCode,id));
     }
@@ -78,17 +77,17 @@ public class BoardController {
         return new ResponseDto (boardService.deleteBoard(id));
     }
 
-    @ApiOperation(
-            value = "게시글 작성"
-            , notes = "화면에서 입력받은 글정보 작성")
-    @PostMapping(value = "/v1/{id}/comment")
-    public ResponseDto boardCommentWrite(@Valid @RequestBody WriteCommentDto writeCommentDto,@PathVariable Long id, HttpSession session) {
-        SessionUser loggedInUser = (SessionUser) session.getAttribute("loggedInUser");
-        Long memberCode = loggedInUser.getMemberCode();
-
-        return commentService.commentWrite(writeCommentDto,id,memberCode, MilkysEnum.CommentParent.BOARD);
-
-    }
+//    @ApiOperation(
+//            value = "게시글 작성"
+//            , notes = "화면에서 입력받은 글정보 작성")
+//    @PostMapping(value = "/v1/{id}/comment")
+//    public ResponseDto boardCommentWrite(@Valid @RequestBody WriteCommentDto writeCommentDto,@PathVariable Long id, HttpSession session) {
+//        SessionUser loggedInUser = (SessionUser) session.getAttribute("loggedInUser");
+//        Long memberCode = loggedInUser.getMemberCode();
+//
+//        return commentService.commentWrite(writeCommentDto,id,memberCode, MilkysEnum.CommentParent.BOARD);
+//
+//    }
 
 
 }

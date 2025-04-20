@@ -12,6 +12,7 @@ import org.milkys.domain.music.dto.SelectMusicDto;
 import org.milkys.domain.music.dto.UpdateMusicDto;
 import org.milkys.domain.music.dto.WriteMusicDto;
 import org.milkys.domain.music.service.MusicService;
+import org.milkys.domain.recommend.dto.MembercodeDto;
 import org.milkys.domain.recommend.service.RecommendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -36,16 +37,16 @@ public class MusicController {
 
     /**
      * 추후 사진 첨부 개발필요
-     * @param session
+     * @param
      * @return
      */
     @ApiOperation(
             value = "음악 작성"
             , notes = "화면에서 입력받은 글정보 작성")
     @PostMapping(value = "/v1")
-    public ResponseDto musicWrite(@Valid @RequestBody WriteMusicDto writeMusicDto, HttpSession session) {
+    public ResponseDto musicWrite(@Valid @RequestBody WriteMusicDto writeMusicDto) {
 
-        return musicService.musicWrite(writeMusicDto,session);
+        return musicService.musicWrite(writeMusicDto);
 
     }
 
@@ -62,19 +63,17 @@ public class MusicController {
             value = "음악 단일조회"
             , notes = "음악테이블에있는 전체데이터조회 조회시 조회수 증가")
     @GetMapping(value = "/v1/{id}")
-    public ResponseDto<List<SelectMusicDto>> musicDetail(@PathVariable Long id) {
-        int likeCount = recommendService.countRecommend(id,MilkysEnum.CommentParent.MUSIC);
+    public ResponseDto<SelectMusicDto> musicDetail(@PathVariable Long id) {
         return musicService.findById(id);
 
     }
     @ApiOperation(
-            value = "게시글 수정하기"
+            value = "음악 수정하기"
             , notes = "로그인된 아이디와 글작성자 아이디 비교 후 수정할 정보를 수정")
     @PutMapping(value = "/v1/{id}")
     public ResponseDto  updatemusic(@RequestBody UpdateMusicDto updateMusicDto, @PathVariable Long id ) {
 
-        SessionUser loggedInUser = (SessionUser) session.getAttribute("loggedInUser");
-        Long memberCode = loggedInUser.getMemberCode();
+        Long memberCode =updateMusicDto.getMemberCode();
 
         return new ResponseDto(musicService.updateMusic(updateMusicDto,memberCode,id));
     }
@@ -87,29 +86,24 @@ public class MusicController {
         return new ResponseDto (musicService.deleteMusic(id));
     }
 
-    @ApiOperation(
-            value = "음악댓글 작성"
-            , notes = "화면에서 입력받은 글정보 작성")
-    @PostMapping(value = "/v1/{id}/comment")
-    public ResponseDto musicCommentWrite(@Valid @RequestBody WriteCommentDto writeCommentDto,@PathVariable Long id, HttpSession session) {
-        SessionUser loggedInUser = (SessionUser) session.getAttribute("loggedInUser");
-        Long memberCode = loggedInUser.getMemberCode();
-
-        return commentService.commentWrite(writeCommentDto,id,memberCode, MilkysEnum.CommentParent.MUSIC);
-
-    }
+//    @ApiOperation(
+//            value = "음악댓글 작성"
+//            , notes = "화면에서 입력받은 글정보 작성")
+//    @PostMapping(value = "/v1/{id}/comment")
+//    public ResponseDto musicCommentWrite(@Valid @RequestBody WriteCommentDto writeCommentDto,@PathVariable Long id) {
+//        Long memberCode =writeCommentDto.getMemberCode();
+//        return commentService.commentWrite(writeCommentDto,id,memberCode, MilkysEnum.CommentParent.MUSIC);
+//
+//    }
 
     @ApiOperation(
             value = "음악 추천/추천취소"
             , notes = "추천테이블에 관련글에 추천기록이없으면 추천 추천이있으면 추천취소됨" +
             "추천누르면 음악게시글이 1증가 취소하면 1감소")
     @PostMapping(value = "/v1/{id}/recommend")
-    public ResponseDto musicRecommend(@PathVariable Long id, HttpSession session) {
-        SessionUser loggedInUser = (SessionUser) session.getAttribute("loggedInUser");
-        Long memberCode = loggedInUser.getMemberCode();
-        ResponseDto option = recommendService.recommendCreate(id,memberCode,MilkysEnum.CommentParent.MUSIC);
+    public ResponseDto musicRecommend(@PathVariable Long id, @RequestBody MembercodeDto membercodeDto ) {
+        ResponseDto option = recommendService.recommendCreate(id, membercodeDto.getMemberCode(), MilkysEnum.CommentParent.MUSIC);
        return musicService.updateMusicRecommend(option,id);
-
 
     }
 
@@ -121,4 +115,8 @@ public class MusicController {
 
         return musicService.getSetList();
     }
+
+
+
+
 }

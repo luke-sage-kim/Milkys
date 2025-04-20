@@ -15,19 +15,24 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WriteMusicDto {
+
+    private String memberId;
+
     @NotBlank(message = "제목을 입력해주십시오")
     private String title;
 
     @NotBlank(message = "내용을 입력해주십시오")
     private String content;
 
-
+    @NotBlank(message = "링크를 입력해주십시오")
+    private String musicLink;
 
     public Music toEntity(Member member) {
         return Music.builder()
                 .title(this.title)
                 .content(this.content)
                 .like(0)
+                .musicLink(this.musicLink)
                 .status(MilkysEnum.MusicStatus.SHARE)
                 .member(member)
                 .build();

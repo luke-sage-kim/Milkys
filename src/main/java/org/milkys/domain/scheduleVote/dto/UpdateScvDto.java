@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class UpdateScvDto {
+    private long memberCode;
     private String scvDate;
     private String scvStart;
     private String scvEnd;

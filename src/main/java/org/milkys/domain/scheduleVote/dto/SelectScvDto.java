@@ -15,6 +15,7 @@ public class SelectScvDto {
     private String scvStart;
     private String scvEnd;
     private String memberNickName;
+    private long memberCode;
 
 
     public static SelectScvDto fromScv(ScheduleVote scheduleVote) {
@@ -24,6 +25,7 @@ public class SelectScvDto {
                 .scvStart(scheduleVote.getScvStart())
                 .scvEnd(scheduleVote.getScvEnd())
                 .memberNickName(scheduleVote.getMember().getMemberNickname())
+                .memberCode(scheduleVote.getMember().getMemberCode())
                 .build();
     }
 

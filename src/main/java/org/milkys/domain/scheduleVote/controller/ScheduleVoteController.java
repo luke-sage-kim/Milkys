@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.milkys.common.dto.ResponseDto;
 import org.milkys.config.SessionUser;
+import org.milkys.domain.scheduleVote.dto.DeleteScvDto;
 import org.milkys.domain.scheduleVote.dto.SelectScvDto;
 import org.milkys.domain.scheduleVote.dto.UpdateScvDto;
 import org.milkys.domain.scheduleVote.dto.WriteScvDto;
@@ -28,17 +29,15 @@ public class ScheduleVoteController {
     /**
      * 추후 사진 첨부 개발필요
      * @param requestDto
-     * @param session
      * @return
      */
     @ApiOperation(
             value = "일정투표 작성"
             , notes = "화면에서 입력받은 글정보 작성")
     @PostMapping(value = "/v1/write")
-    public ResponseDto scvWrite(@Valid @RequestBody WriteScvDto requestDto, HttpSession session) {
-
-        return scheduleVoteService.scvWrite(requestDto,session);
-
+    public ResponseDto scvWrite(@Valid @RequestBody WriteScvDto requestDto) {
+        Long memberCode =requestDto.getMemberCode();
+        return scheduleVoteService.scvWrite(requestDto,memberCode);
     }
 
     @ApiOperation(
@@ -53,28 +52,27 @@ public class ScheduleVoteController {
     @ApiOperation(
             value = "일정투표 단일조회"
             , notes = "일정투표테이블에있는 해당날짜에 해당되는 투표가져오기")
-    @GetMapping(value = "/v1/{id}")
+    @GetMapping(value = "/v1/{scvDate}")
     public ResponseDto<List<SelectScvDto>> scvDetail(@PathVariable String scvDate) {
         return scheduleVoteService.scvDetail(scvDate);
 
     }
     @ApiOperation(
-            value = "게시글 수정하기"
+            value = "일정 수정하기"
             , notes = "로그인된 아이디와 글작성자 아이디 비교 후 수정할 정보를 수정")
     @PutMapping(value = "/v1/{id}")
-    public ResponseDto  updatescv(@RequestBody UpdateScvDto updatescvDto, @PathVariable Long id ) {
-
-        SessionUser loggedInUser = (SessionUser) session.getAttribute("loggedInUser");
-        Long memberCode = loggedInUser.getMemberCode();
-
-        return new ResponseDto(scheduleVoteService.updatescv(updatescvDto,memberCode,id));
+    public ResponseDto  updatescv(@RequestBody UpdateScvDto updatescvDto
+    ) {
+        Long memberCode =updatescvDto.getMemberCode();
+        return new ResponseDto(scheduleVoteService.updatescv(updatescvDto,memberCode));
     }
     @ApiOperation(
             value = "일정투표 삭제"
-            , notes = "화면에서 입력받은 일정투표아이디로 삭제")
-    @DeleteMapping(value = "/v1/{id}")
-    public ResponseDto deleteScv(@PathVariable Long id){
-        return new ResponseDto (scheduleVoteService.deleteScv(id));
+            , notes = "화면에있는 날짜와 세션에있는 멤버코드와 일치하는 데이터삭제")
+    @DeleteMapping(value = "/v1")
+    public ResponseDto deleteScv(@RequestBody DeleteScvDto deleteScvDto){
+
+        return new ResponseDto (scheduleVoteService.deleteScv(deleteScvDto));
     }
 
 

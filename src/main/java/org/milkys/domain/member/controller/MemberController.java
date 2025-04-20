@@ -91,14 +91,29 @@ public class MemberController {
             value = "회원정보 수정하기"
             , notes = "멤버테이블에서 모든회원정보 가져오기")
     @PutMapping(value = "/v1/memberUpdate")
-    public ResponseDto  updateMember(@RequestBody UpdateMemberDto request
-    ) {
+    public ResponseDto updateMember(@RequestBody UpdateMemberDto request) {
 
-        SessionUser loggedInUser = (SessionUser) session.getAttribute("loggedInUser");
-        Long memberCode = loggedInUser.getMemberCode();
+        // 세션에서 memberId를 가져오기
+        String memberId = request.getMemberId();
 
-        return new ResponseDto(memberService.updateMember(request,memberCode));
+        // memberId가 null인 경우 처리
+        if (memberId == null) {
+            return new ResponseDto("로그인 정보가 없습니다.", HttpStatus.FORBIDDEN.value());
+        }
+
+        // memberId로 회원 정보 조회
+        MemberDto memberDto = memberService.getMemberDto(memberId);
+
+        // 회원 정보가 존재하지 않는 경우 처리
+        if (memberDto == null) {
+            return new ResponseDto("회원 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND.value());
+        }
+
+        // 회원 정보 수정
+        Long memberCode = memberDto.getMemberCode();
+        return new ResponseDto(memberService.updateMember(request, memberCode));
     }
+
 
     //회원탈퇴
     @DeleteMapping(value = "/v1/memberDelete")

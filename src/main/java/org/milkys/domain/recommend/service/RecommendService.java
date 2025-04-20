@@ -5,6 +5,7 @@ import org.milkys.common.MilkysEnum;
 import org.milkys.common.dto.ResponseDto;
 import org.milkys.domain.member.entity.Member;
 import org.milkys.domain.member.repository.MemberRepository;
+import org.milkys.domain.recommend.dto.SelectRecommendDto;
 import org.milkys.domain.recommend.entity.Recommend;
 import org.milkys.domain.recommend.repository.RecommendRepository;
 import org.springframework.http.HttpStatus;
@@ -48,5 +49,14 @@ public class RecommendService {
     public int countRecommend(Long parentId,MilkysEnum.CommentParent recommendParent){
         String convertParentType = String.valueOf(recommendParent);
         return recommendRepository.countByParentIdAndParentType(parentId,convertParentType);
+    }
+
+    public boolean isRecommend(SelectRecommendDto selectRecommendDto){
+        String convertParentType = String.valueOf(selectRecommendDto.getRecommendParent());
+        Recommend recommend =recommendRepository.isRecommend(selectRecommendDto.getParentId(),convertParentType, selectRecommendDto.getMemberCode());
+        if(recommend ==null){
+            return false;
+        }
+        return true;
     }
 }

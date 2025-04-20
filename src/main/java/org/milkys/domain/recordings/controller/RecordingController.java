@@ -83,17 +83,17 @@ public class RecordingController {
         return new ResponseDto (recordingService.deleteRecording(id));
     }
 
-    @ApiOperation(
-            value = "기록댓글 작성"
-            , notes = "화면에서 입력받은 글정보 작성")
-    @PostMapping(value = "/v1/{id}/comment")
-    public ResponseDto RecordingCommentWrite(@Valid @RequestBody WriteCommentDto writeCommentDto,@PathVariable Long id, HttpSession session) {
-        SessionUser loggedInUser = (SessionUser) session.getAttribute("loggedInUser");
-        Long memberCode = loggedInUser.getMemberCode();
-
-        return commentService.commentWrite(writeCommentDto,id,memberCode, MilkysEnum.CommentParent.RECORDINGS);
-
-    }
+//    @ApiOperation(
+//            value = "기록댓글 작성"
+//            , notes = "화면에서 입력받은 글정보 작성")
+//    @PostMapping(value = "/v1/{id}/comment")
+//    public ResponseDto RecordingCommentWrite(@Valid @RequestBody WriteCommentDto writeCommentDto,@PathVariable Long id, HttpSession session) {
+//        SessionUser loggedInUser = (SessionUser) session.getAttribute("loggedInUser");
+//        Long memberCode = loggedInUser.getMemberCode();
+//
+//        return commentService.commentWrite(writeCommentDto,id,memberCode, MilkysEnum.CommentParent.RECORDINGS);
+//
+//    }
 
 
 }

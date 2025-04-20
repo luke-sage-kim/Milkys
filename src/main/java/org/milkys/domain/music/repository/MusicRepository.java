@@ -20,6 +20,8 @@ public interface MusicRepository extends JpaRepository<Music,Long> {
     @Modifying
     @Query(value = "update Music m set m.like= m.like-1 where m.id=:id")
     void minusLikeCnt(Long id);
-    @Query(value = "select '*' from Music m where m.status = 'SETLIST'")
+
+    @Query(value = "SELECT * FROM music_table WHERE mu_status = 0", nativeQuery = true)
     List<Music> getSetList();
+
 }

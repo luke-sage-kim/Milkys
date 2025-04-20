@@ -35,11 +35,11 @@ public class MusicService {
         }
         return null;
     }
-    public ResponseDto musicWrite(WriteMusicDto writeMusicDto, HttpSession session) {
+    public ResponseDto musicWrite(WriteMusicDto writeMusicDto) {
         String error = createBoardVaildation(writeMusicDto);
 
         if(StringUtils.hasText(error)) return new ResponseDto(error, HttpStatus.INTERNAL_SERVER_ERROR.value());
-        String memberId = (String) session.getAttribute("memberId");
+        String memberId = writeMusicDto.getMemberId();
         if (memberId == null) {
             return new ResponseDto<>("로그인을 해주세요.", HttpStatus.UNAUTHORIZED);
         }
@@ -69,7 +69,7 @@ public class MusicService {
         }
     }
 
-    public ResponseDto<List<SelectMusicDto>> findById(Long id) {
+    public ResponseDto<SelectMusicDto> findById(Long id) {
         Optional<Music> optionalmusic = musicRepository.findById(id);
         if (optionalmusic.isPresent()) {
             Music music = optionalmusic.get();
@@ -102,23 +102,9 @@ public class MusicService {
         if(!music.getMember().getMemberCode().equals(memberCode)){
             return new ResponseDto("작성자만 수정할 수 있습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
-        music.updateMusicInfo(updateMusicDto.getTitle(),updateMusicDto.getContent());
+        music.updateMusicInfo(updateMusicDto.getTitle(),updateMusicDto.getContent(),updateMusicDto.getMusicLink());
         musicRepository.save(music);
-        return new ResponseDto("음악가 업데이트되었습니다.", HttpStatus.OK.value());
-    }
-    public ResponseDto likeMusic(UpdateMusicDto updateMusicDto, Long memberCode, Long id) {
-        Optional<Music> optionalMusic = musicRepository.findById(id);
-        if (!optionalMusic.isPresent()) {
-            // 해당 회원이 존재하지 않는 경우 에러 응답을 반환합니다.
-            return new ResponseDto("존재하지 않는 게시물입니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        }
-        Music music = optionalMusic.get();
-        if(!music.getMember().getMemberCode().equals(memberCode)){
-            return new ResponseDto("작성자만 수정할 수 있습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        }
-        music.updateMusicInfo(updateMusicDto.getTitle(),updateMusicDto.getContent());
-        musicRepository.save(music);
-        return new ResponseDto("음악가 업데이트되었습니다.", HttpStatus.OK.value());
+        return new ResponseDto("음악게시글이 업데이트되었습니다.", HttpStatus.OK.value());
     }
 
     public ResponseDto updateMusicRecommend(ResponseDto option,Long id) {

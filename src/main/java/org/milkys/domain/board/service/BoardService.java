@@ -39,20 +39,23 @@ public class BoardService {
         }
         return null;
     }
-    public ResponseDto boardWrite(WriteBoardDto writeBoardDto, HttpSession session) {
-        String error = createBoardVaildation(writeBoardDto);
+    public ResponseDto boardWrite(WriteBoardDto writeBoardDto,  Long memberCode) {
 
-        if(StringUtils.hasText(error)) return new ResponseDto(error, HttpStatus.INTERNAL_SERVER_ERROR.value());
-        String memberId = (String) session.getAttribute("memberId");
-        if (memberId == null) {
+        if (memberCode == null) {
             return new ResponseDto<>("로그인을 해주세요.", HttpStatus.UNAUTHORIZED);
         }
-        Member member = memberRepository.findByMemberId(memberId);
-        Board board = writeBoardDto.toEntity(member);
-        Board savedBoard = boardRepository.save(board);
-        if(savedBoard != null) {
-            return new ResponseDto("글작성을 완료하였습니다.", HttpStatus.OK.value());
-        } else return new ResponseDto("글작성을 실패했습니다", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        Optional<Member> memberOptional = memberRepository.findById(memberCode);
+        if (memberOptional.isPresent()){
+            Member member = memberOptional.get();
+            Board board = writeBoardDto.toEntity(member);
+            Board savedBoard = boardRepository.save(board);
+            if(savedBoard != null) {
+                return new ResponseDto("글작성을 완료하였습니다.", HttpStatus.OK.value());
+            } else return new ResponseDto("글작성을 실패했습니다", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }else {
+            return new ResponseDto("회원이없습니다", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+
     }
 
     public ResponseDto<List<SelectBoardDto>> selectBoardList() {

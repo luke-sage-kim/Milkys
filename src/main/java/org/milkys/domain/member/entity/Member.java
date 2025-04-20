@@ -65,6 +65,7 @@ public class Member extends BaseEntity {
                 .memberName(memberName)
                 .memberNickname(memberNickname)
                 .memberBirthday(memberBirthday)
+                .memberPhoneNumber(memberPhoneNumber)
                 .memberAuth(memberAuth)
                 .build();
     }

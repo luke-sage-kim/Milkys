@@ -15,6 +15,8 @@ public class SelectMusicDto {
     private String content;
     private int like;
     private String memberNickName;
+    private long memberCode;
+    private String musicLink;
     private MilkysEnum.MusicStatus status;
 
     public static SelectMusicDto frommusic(Music music) {
@@ -24,7 +26,9 @@ public class SelectMusicDto {
                 .content(music.getContent())
                 .like(music.getLike())
                 .status(music.getStatus())
+                .musicLink(music.getMusicLink())
                 .memberNickName(music.getMember().getMemberNickname())
+                .memberCode(music.getMember().getMemberCode())
                 .build();
     }
 

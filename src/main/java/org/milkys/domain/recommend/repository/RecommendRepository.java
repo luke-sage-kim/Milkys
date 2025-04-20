@@ -15,5 +15,6 @@ public interface RecommendRepository extends JpaRepository<Recommend,Long> {
     int countByParentIdAndParentType( Long parentId,  @Param("parentType")String parentType);
     @Query(value = "SELECT * FROM recommend_table r WHERE r.parent_id = :parentId AND r.parent_type = :parentType AND r.mem_code = :memberCode", nativeQuery = true)
     Optional<Recommend> findByMemberId(Long parentId,  @Param("parentType") String recommendParent,Long memberCode);
-
+    @Query(value = "SELECT * FROM recommend_table r WHERE r.parent_id = :parentId AND r.parent_type = :parentType AND r.mem_code = :memberCode", nativeQuery = true)
+    Recommend isRecommend(Long parentId,  @Param("parentType") String recommendParent,Long memberCode);
 }

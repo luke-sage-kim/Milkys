@@ -21,6 +21,7 @@ public class SelectBoardDto {
     private int viewCnt;
     private MilkysEnum.BoardType boardType;
     private String memberNickName;
+    private long memberCode;
 
 
     public static SelectBoardDto fromBoard(Board board) {
@@ -31,6 +32,7 @@ public class SelectBoardDto {
                 .viewCnt(board.getViewCnt())
                 .boardType(board.getBoardType())
                 .memberNickName(board.getMember().getMemberNickname())
+                .memberCode(board.getMember().getMemberCode())
                 .build();
     }
 

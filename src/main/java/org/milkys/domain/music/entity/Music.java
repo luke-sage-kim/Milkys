@@ -25,6 +25,10 @@ public class Music extends BaseEntity {
 
     @Column(name = "mu_content")
     private String content;
+
+    @Column(name = "mu_link")
+    private String musicLink;
+
     //좋아요 테이블 만들어서 누를때 좋아요 갯수 합을 반영해도될듯
     @Column(name = "mu_like")
     private int like;
@@ -36,12 +40,16 @@ public class Music extends BaseEntity {
     @JoinColumn(name = "mem_code")
     private Member member;
 
-    public void updateMusicInfo(String title, String content) {
+    public void updateMusicInfo(String title, String content,String musicLink) {
         if (title != null) {
             this.title = title;
         }
         if (content != null) {
             this.content = content;
+        }
+
+        if (musicLink != null) {
+            this.musicLink = musicLink;
         }
     }
 

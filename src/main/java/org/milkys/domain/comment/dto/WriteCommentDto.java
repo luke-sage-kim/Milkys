@@ -16,9 +16,11 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class WriteCommentDto {
 
+    private long memberCode;
     @NotBlank(message = "내용을 입력해주십시오")
     private String content;
-
+    private String parentType;
+    
     public Comment toEntity(long parentId, Member member, MilkysEnum.CommentParent commentParent) {
         return Comment.builder()
                 .content(this.content)

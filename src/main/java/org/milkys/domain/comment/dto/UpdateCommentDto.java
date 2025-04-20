@@ -15,7 +15,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateCommentDto {
-
+    private long memberCode;
     @NotBlank(message = "내용을 입력해주십시오")
     private String content;
 
