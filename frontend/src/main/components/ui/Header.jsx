@@ -58,11 +58,14 @@ function Header() {
                         <a href="#about" className="hover:text-gray-400 transition">
                             Recordings
                         </a>
-                        <a href="#services" className="hover:text-gray-400 transition">
+                        <Link to="/gallery" className="hover:text-gray-400 transition">
                             Gallery
-                        </a>
+                        </Link>
                         <Link to="/board-main" className="hover:text-gray-400 transition">
                             Board
+                        </Link>
+                        <Link to="/schedule" className="hover:text-gray-400 transition">
+                            Schedule
                         </Link>
                     </nav>
 
@@ -101,13 +104,15 @@ function Header() {
                         <a href="#about" className="py-2 text-white hover:bg-gray-700 transition" onClick={() => setMenuOpen(false)}>
                             Recordings
                         </a>
-                        <a href="#services" className="py-2 text-white hover:bg-gray-700 transition" onClick={() => setMenuOpen(false)}>
+                        <Link to="/gallery" className="py-2 text-white hover:bg-gray-700 transition" onClick={() => setMenuOpen(false)}>
                             Gallery
-                        </a>
+                        </Link>
                         <Link to="/board-main" className="py-2 text-white hover:bg-gray-700 transition" onClick={() => setMenuOpen(false)}>
                             Board
                         </Link>
-
+                        <Link to="/schedule" className="py-2 text-white hover:bg-gray-700 transition" onClick={() => setMenuOpen(false)}>
+                            Schedule
+                        </Link>
                         <div className="border-t border-gray-600 my-2"></div>
 
                         {isLoggedIn ? (

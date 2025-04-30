@@ -9,6 +9,8 @@ import lombok.*;
 @Builder
 public class UpdateScheduleDto {
     private String scDate;
+    private String scStart;
+    private String scEnd;
     private String scLoca;
     private String scContent;
 }

@@ -11,7 +11,9 @@ import org.milkys.domain.gallery.entity.Gallery;
 @AllArgsConstructor
 @Builder
 public class SelectGalleryDto {
+
     private Long id;
+    private Long memberCode;
     private String title;
     private String content;
     private int viewCnt;
@@ -25,6 +27,7 @@ public class SelectGalleryDto {
                 .content(gallery.getContent())
                 .viewCnt(gallery.getViewCnt())
                 .memberNickName(gallery.getMember().getMemberNickname())
+                .memberCode(gallery.getMember().getMemberCode())
                 .build();
     }
 

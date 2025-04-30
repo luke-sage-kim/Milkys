@@ -17,6 +17,7 @@ import org.milkys.domain.gallery.dto.UpdateGalleryDto;
 import org.milkys.domain.gallery.dto.WriteGalleryDto;
 import org.milkys.domain.gallery.service.GalleryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -37,17 +38,14 @@ public class GalleryController {
     /**
      * 추후 사진 첨부 개발필요
      * @param requestDto
-     * @param session
      * @return
      */
     @ApiOperation(
             value = "갤러리 작성"
             , notes = "화면에서 입력받은 글정보 작성")
-    @PostMapping(value = "/v1/write")
-    public ResponseDto galleryWrite(@Valid @RequestBody WriteGalleryDto requestDto, HttpSession session) {
-
-        return galleryService.galleryWrite(requestDto,session);
-
+    @PostMapping(value = "/v1/write", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseDto galleryWrite(@ModelAttribute WriteGalleryDto requestDto) {
+        return galleryService.galleryWrite(requestDto);
     }
 
     @ApiOperation(
@@ -74,8 +72,7 @@ public class GalleryController {
     @PutMapping(value = "/v1/{id}")
     public ResponseDto  updateGallery(@RequestBody UpdateGalleryDto updateGalleryDto, @PathVariable Long id ) {
 
-        SessionUser loggedInUser = (SessionUser) session.getAttribute("loggedInUser");
-        Long memberCode = loggedInUser.getMemberCode();
+        Long memberCode = updateGalleryDto.getMemberCode();
 
         return new ResponseDto(galleryService.updateGallery(updateGalleryDto,memberCode,id));
     }
@@ -88,17 +85,6 @@ public class GalleryController {
         return new ResponseDto (galleryService.deleteGallery(id));
     }
 
-//    @ApiOperation(
-//            value = "갤러리댓글 작성"
-//            , notes = "화면에서 입력받은 글정보 작성")
-//    @PostMapping(value = "/v1/{id}/comment")
-//    public ResponseDto galleryCommentWrite(@Valid @RequestBody WriteCommentDto writeCommentDto,@PathVariable Long id, HttpSession session) {
-//        SessionUser loggedInUser = (SessionUser) session.getAttribute("loggedInUser");
-//        Long memberCode = loggedInUser.getMemberCode();
-//
-//        return commentService.commentWrite(writeCommentDto,id,memberCode, MilkysEnum.CommentParent.GALLERY);
-//
-//    }
 
 
 }

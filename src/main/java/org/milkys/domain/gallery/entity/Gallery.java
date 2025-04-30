@@ -1,7 +1,6 @@
 package org.milkys.domain.gallery.entity;
 
 import lombok.*;
-import org.milkys.common.MilkysEnum;
 import org.milkys.common.entity.BaseEntity;
 import org.milkys.domain.member.entity.Member;
 

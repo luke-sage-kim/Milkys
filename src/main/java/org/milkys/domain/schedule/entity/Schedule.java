@@ -22,17 +22,26 @@ public class Schedule extends BaseEntity {
     @Column(name = "sc_day")
     private String scDate;
 
+    @Column(name = "sc_start")
+    private String scStart;//합주시작시간
+
+    @Column(name = "sc_end")
+    private String scEnd;//합주종료시간
+
     @Column(name = "sc_loca")
     private String scLoca;
     //나중에 로케이션엔티티만들어서 받자
 
     @Column(name = "sc_content")
     private String scContent;
+    //내용
 
-
-    public void updateScheduleInfo(String scDate, String scLoca, String scContent) {
-        if (scDate != null) {
-            this.scDate = scDate;
+    public void updateScheduleInfo(String scStart,String scEnd, String scLoca, String scContent) {
+        if (scStart != null) {
+            this.scStart = scStart;
+        }
+        if (scEnd != null) {
+            this.scEnd = scEnd;
         }
         if (scLoca != null) {
             this.scLoca = scLoca;

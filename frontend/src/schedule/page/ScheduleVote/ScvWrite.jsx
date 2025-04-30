@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import useSessionData from "../../atom/components/MySession";
+import useSessionData from "../../../atom/components/MySession";
 
 const ScvWrite = () => {
     const { date } = useParams();

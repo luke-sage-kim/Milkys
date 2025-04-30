@@ -14,6 +14,8 @@ import javax.persistence.Column;
 public class SelectScheduleDto {
     private Long id;
     private String scDate;
+    private String scStart;
+    private String scEnd;
     private String scLoca;
     private String scContent;
 
@@ -22,6 +24,8 @@ public class SelectScheduleDto {
         return SelectScheduleDto.builder()
                 .id(schedule.getId())
                 .scDate(schedule.getScDate())
+                .scStart(schedule.getScStart())
+                .scEnd(schedule.getScEnd())
                 .scLoca(schedule.getScLoca())
                 .scContent(schedule.getScContent())
                 .build();

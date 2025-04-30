@@ -30,7 +30,6 @@ public class ScheduleController {
     /**
      * 추후 사진 첨부 개발필요
      * @param requestDto
-     * @param session
      * @return
      */
     @ApiOperation(
@@ -38,9 +37,9 @@ public class ScheduleController {
             , notes = "화면에서 입력받은 일정 작성" +
             "리더만작성가능")
     @PostMapping(value = "/v1/write")
-    public ResponseDto scWrite(@Valid @RequestBody WriteScheduleDto requestDto, HttpSession session) {
-        scheduleVoteService.deleteByDay(requestDto);
-        return scheduleService.scWrite(requestDto,session);
+    public ResponseDto scWrite(@Valid @RequestBody WriteScheduleDto requestDto) {
+            scheduleVoteService.deleteByDay(requestDto);
+        return scheduleService.scWrite(requestDto);
 
     }
 
@@ -56,28 +55,25 @@ public class ScheduleController {
     @ApiOperation(
             value = "일정 단일조회"
             , notes = "일정테이블에있는 해당날짜에 해당되는 투표가져오기")
-    @GetMapping(value = "/v1/{id}")
-    public ResponseDto<List<SelectScheduleDto>> scheduleDetail(@PathVariable long id) {
-        return scheduleService.scheduleDetail(id);
+    @GetMapping(value = "/v1/{scDate}")
+    public ResponseDto<List<SelectScheduleDto>> scheduleDetail(@PathVariable String scDate) {
+        return scheduleService.scheduleDetail(scDate);
 
     }
     @ApiOperation(
             value = "게시글 수정하기"
-            , notes = "로그인된 아이디와 글작성자 아이디 비교 후 수정할 정보를 수정")
-    @PutMapping(value = "/v1/{id}")
-    public ResponseDto  updateschedule(@RequestBody UpdateScheduleDto updatescheduleDto, @PathVariable Long id ) {
+            , notes = "")
+    @PutMapping(value = "/v1/{scDate}")
+    public ResponseDto  updateschedule(@RequestBody UpdateScheduleDto updatescheduleDto ) {
 
-        SessionUser loggedInUser = (SessionUser) session.getAttribute("loggedInUser");
-        Long memberCode = loggedInUser.getMemberCode();
-
-        return new ResponseDto(scheduleService.updateSchedule(updatescheduleDto,memberCode,id));
+        return new ResponseDto(scheduleService.updateSchedule(updatescheduleDto));
     }
     @ApiOperation(
             value = "일정 삭제"
             , notes = "화면에서 입력받은 일정아이디로 삭제")
-    @DeleteMapping(value = "/v1/{id}")
-    public ResponseDto deleteschedule(@PathVariable Long id){
-        return new ResponseDto (scheduleService.deleteschedule(id));
+    @DeleteMapping(value = "/v1/{scDate}")
+    public ResponseDto deleteschedule(@PathVariable String scDate){
+        return new ResponseDto (scheduleService.deleteschedule(scDate));
     }
 //    @ApiOperation(
 //            value = "가장 최신 스케줄 가져오기"

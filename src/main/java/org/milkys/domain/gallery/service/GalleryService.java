@@ -12,6 +12,8 @@ import org.milkys.domain.gallery.dto.UpdateGalleryDto;
 import org.milkys.domain.gallery.dto.WriteGalleryDto;
 import org.milkys.domain.gallery.entity.Gallery;
 import org.milkys.domain.gallery.repository.GalleryRepository;
+import org.milkys.domain.mediaFile.dto.UploadMediaFileDto;
+import org.milkys.domain.mediaFile.service.MediaFileService;
 import org.milkys.domain.member.entity.Member;
 import org.milkys.domain.member.repository.MemberRepository;
 import org.springframework.http.HttpStatus;
@@ -29,7 +31,7 @@ import java.util.stream.Collectors;
 public class GalleryService {
     private final GalleryRepository galleryRepository;
     private final MemberRepository memberRepository;
-    private final HttpSession session;
+    private final MediaFileService mediaFileService;
 
     private String createBoardVaildation(WriteGalleryDto writeGalleryDto) {
         if(!StringUtils.hasText(writeGalleryDto.getTitle())){
@@ -40,21 +42,43 @@ public class GalleryService {
         }
         return null;
     }
-    public ResponseDto galleryWrite(WriteGalleryDto writeGalleryDto, HttpSession session) {
+    public ResponseDto galleryWrite(WriteGalleryDto writeGalleryDto) {
+        // 1. 글 작성 유효성 검사
         String error = createBoardVaildation(writeGalleryDto);
-
-        if(StringUtils.hasText(error)) return new ResponseDto(error, HttpStatus.INTERNAL_SERVER_ERROR.value());
-        String memberId = (String) session.getAttribute("memberId");
-        if (memberId == null) {
-            return new ResponseDto<>("로그인을 해주세요.", HttpStatus.UNAUTHORIZED);
+        if (StringUtils.hasText(error)) {
+            return new ResponseDto(error, HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
-        Member member = memberRepository.findByMemberId(memberId);
+
+        // 2. Member 정보 찾기
+        Optional<Member> memberOptional = memberRepository.findById(writeGalleryDto.getMemberCode());
+        if (!memberOptional.isPresent()) {
+            return new ResponseDto("아이디가 존재하지 않습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+        Member member = memberOptional.get();
+
+        // 3. Gallery 엔티티 생성 후 저장
         Gallery gallery = writeGalleryDto.toEntity(member);
-        Gallery gallerysave = galleryRepository.save(gallery);
-        if(gallerysave != null) {
-            return new ResponseDto("갤러리작성을 완료하였습니다.", HttpStatus.OK.value());
-        } else return new ResponseDto("갤러리작성을 실패했습니다", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        Gallery gallerySave = galleryRepository.save(gallery);
+
+        // 4. 갤러리 글 저장 성공 시
+        if (gallerySave != null) {
+            // 5. 파일이 존재하면 MediaFile 저장
+            if (writeGalleryDto.getFiles() != null && !writeGalleryDto.getFiles().isEmpty()) {
+                UploadMediaFileDto uploadDto = new UploadMediaFileDto();
+                uploadDto.setFiles(writeGalleryDto.getFiles());
+                uploadDto.setDomainType("GALLERY");  // 도메인 타입 (갤러리)
+                uploadDto.setParentId(gallerySave.getId());  // parentId는 갤러리 글의 ID로 설정
+
+                // 6. MediaFileService 호출하여 파일 업로드 처리
+                mediaFileService.uploadMediaFiles(uploadDto);
+            }
+
+            return new ResponseDto("갤러리 작성 및 파일 업로드를 완료하였습니다.", HttpStatus.OK.value());
+        } else {
+            return new ResponseDto("갤러리 작성을 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
     }
+
 
     public ResponseDto<List<SelectGalleryDto>> selectGalleryList() {
         try {
@@ -93,6 +117,7 @@ public class GalleryService {
         Optional<Gallery> optionalGallery = galleryRepository.findById(id);
         if (optionalGallery.isPresent()) {
             Gallery gallery = optionalGallery.get();
+            mediaFileService.deleteMediaFile("GALLERY", gallery.getId());
             galleryRepository.delete(gallery);
             return new ResponseDto("갤러리 삭제 성공", HttpStatus.OK.value());
         }

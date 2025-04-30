@@ -11,6 +11,7 @@ import org.milkys.domain.gallery.entity.Gallery;
 @AllArgsConstructor
 @Builder
 public class UpdateGalleryDto {
+    private long memberCode;
     private String title;
     private String content;
 

@@ -24,18 +24,14 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final HttpSession session;
 
-    public ResponseDto scWrite(WriteScheduleDto writeScheduleDto, HttpSession session) {
+    public ResponseDto scWrite(WriteScheduleDto writeScheduleDto) {
 
-        String memberId = (String) session.getAttribute("memberId");
-        if (memberId == null) {
-            return new ResponseDto<>("로그인을 해주세요.", HttpStatus.UNAUTHORIZED);
-        }
-        String memberAuth = (String) session.getAttribute("memberAuth");
-        if(!memberAuth.equals(MilkysEnum.MemberRoleType.LEADER)
-        ){
-            return new ResponseDto<>("리더만 스케줄을 등록할 수 있습니다.", HttpStatus.UNAUTHORIZED);
-
-        }
+//        String memberAuth = (String) session.getAttribute("memberAuth");
+//        if(!memberAuth.equals(MilkysEnum.MemberRoleType.LEADER)
+//        ){
+//            return new ResponseDto<>("리더만 스케줄을 등록할 수 있습니다.", HttpStatus.UNAUTHORIZED);
+//
+//        }
         Schedule schedule =  writeScheduleDto.toEntity();
         Schedule scheduleSave = scheduleRepository.save(schedule);
         if(scheduleSave != null) {
@@ -60,8 +56,8 @@ public class ScheduleService {
         }
     }
 
-    public ResponseDto<List<SelectScheduleDto>> scheduleDetail(long id) {
-        Optional<Schedule> optionalSchedule = scheduleRepository.findById(id);
+    public ResponseDto<List<SelectScheduleDto>> scheduleDetail(String scDate) {
+        Optional<Schedule> optionalSchedule = scheduleRepository.findByDate(scDate);
         if (optionalSchedule.isPresent()) {
             Schedule schedule = optionalSchedule.get();
             SelectScheduleDto selectScheduleDto = SelectScheduleDto.fromSchedule(schedule);
@@ -71,8 +67,8 @@ public class ScheduleService {
         }
     }
 
-    public Object deleteschedule(Long id) {
-        Optional<Schedule> optionalSchedule = scheduleRepository.findById(id);
+    public Object deleteschedule(String scDate) {
+        Optional<Schedule> optionalSchedule = scheduleRepository.findByDate(scDate);
         if (optionalSchedule.isPresent()) {
             Schedule schedule = optionalSchedule.get();
             scheduleRepository.delete(schedule);
@@ -83,20 +79,20 @@ public class ScheduleService {
         }
     }
 
-    public ResponseDto updateSchedule(UpdateScheduleDto updateScheduleDto, Long memberCode, Long id) {
-        Optional<Schedule> optionalSchedule = scheduleRepository.findById(id);
+    public ResponseDto updateSchedule(UpdateScheduleDto updateScheduleDto) {
+        Optional<Schedule> optionalSchedule = scheduleRepository.findByDate(updateScheduleDto.getScDate());
         if (!optionalSchedule.isPresent()) {
             // 해당 회원이 존재하지 않는 경우 에러 응답을 반환합니다.
             return new ResponseDto("존재하지 않는 게시물입니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
         String memberAuth = (String) session.getAttribute("memberAuth");
-        if(!memberAuth.equals(MilkysEnum.MemberRoleType.LEADER)
-        ){
-            return new ResponseDto<>("리더만 스케줄을 수정할 수 있습니다.", HttpStatus.UNAUTHORIZED);
-
-        }
+//        if(!memberAuth.equals(MilkysEnum.MemberRoleType.LEADER)
+//        ){
+//            return new ResponseDto<>("리더만 스케줄을 수정할 수 있습니다.", HttpStatus.UNAUTHORIZED);
+//
+//        }
         Schedule schedule = optionalSchedule.get();
-        schedule.updateScheduleInfo(updateScheduleDto.getScDate(),updateScheduleDto.getScLoca(),updateScheduleDto.getScContent());
+        schedule.updateScheduleInfo(updateScheduleDto.getScStart(), updateScheduleDto.getScEnd(), updateScheduleDto.getScLoca(),updateScheduleDto.getScContent());
         scheduleRepository.save(schedule);
         return new ResponseDto("일정가 업데이트되었습니다.", HttpStatus.OK.value());
     }
