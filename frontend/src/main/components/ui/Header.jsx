@@ -55,9 +55,9 @@ function Header() {
                         <Link to="/music-main" className="hover:text-gray-400 transition">
                             Music
                         </Link>
-                        <a href="#about" className="hover:text-gray-400 transition">
+                        <Link to="/recordings" className="hover:text-gray-400 transition">
                             Recordings
-                        </a>
+                        </Link>
                         <Link to="/gallery" className="hover:text-gray-400 transition">
                             Gallery
                         </Link>
@@ -67,6 +67,12 @@ function Header() {
                         <Link to="/schedule" className="hover:text-gray-400 transition">
                             Schedule
                         </Link>
+
+                        {userData.memberAuth === 'ADMIN' && (
+                            <Link to="/admin" className="hover:text-yellow-400 transition">
+                                Admin
+                            </Link>
+                        )}
                     </nav>
 
                     {/* 로그인/로그아웃 & 마이페이지 버튼 */}
@@ -101,9 +107,9 @@ function Header() {
                         <Link to="/music-main" className="py-2 text-white hover:bg-gray-700 transition" onClick={() => setMenuOpen(false)}>
                             Music
                         </Link>
-                        <a href="#about" className="py-2 text-white hover:bg-gray-700 transition" onClick={() => setMenuOpen(false)}>
+                        <Link to="/recordings" className="py-2 text-white hover:bg-gray-700 transition" onClick={() => setMenuOpen(false)}>
                             Recordings
-                        </a>
+                        </Link>
                         <Link to="/gallery" className="py-2 text-white hover:bg-gray-700 transition" onClick={() => setMenuOpen(false)}>
                             Gallery
                         </Link>
@@ -113,6 +119,16 @@ function Header() {
                         <Link to="/schedule" className="py-2 text-white hover:bg-gray-700 transition" onClick={() => setMenuOpen(false)}>
                             Schedule
                         </Link>
+
+                        {userData.memberAuth === 'ADMIN' && (
+                            <Link
+                                to="/admin"
+                                className="py-2 text-yellow-400 hover:bg-gray-700 transition"
+                                onClick={() => setMenuOpen(false)}
+                            >
+                                Admin
+                            </Link>
+                        )}
                         <div className="border-t border-gray-600 my-2"></div>
 
                         {isLoggedIn ? (

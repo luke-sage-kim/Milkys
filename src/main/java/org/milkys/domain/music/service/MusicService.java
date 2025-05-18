@@ -151,4 +151,16 @@ public class MusicService {
             return new ResponseDto("서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
+
+    public String getMusicTitleById(long musicId){
+        Optional<Music> musicOptional =musicRepository.findById(musicId);
+        if(musicOptional.isPresent()){
+            Music music = musicOptional.get();
+            String musicTitle = music.getTitle();
+            return musicTitle;
+        }else{
+            return  null;
+        }
+    }
+
 }

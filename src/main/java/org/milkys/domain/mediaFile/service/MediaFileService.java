@@ -98,6 +98,20 @@ public class MediaFileService {
     public void deleteMediaFile(String domainType,long id ) {
         List<MediaFile> mediaFiles = mediaFileRepository.findByDomainTypeAndParentId(domainType, id);
         if(!mediaFiles.isEmpty()){
+            for (MediaFile mediaFile : mediaFiles) {
+                String fullPath = mediaFile.getStoredFilePath(); // 예: "C:/milkysDatabase/audio/abc123.mp3"
+                File file = new File(fullPath);
+
+                // 파일 존재 여부 확인 후 삭제
+                if (file.exists()) {
+                    boolean deleted = file.delete();
+                    if (!deleted) {
+                        System.err.println("파일 삭제 실패: " + fullPath);
+                    }
+                } else {
+                    System.err.println("파일이 존재하지 않음: " + fullPath);
+                }
+            }
             mediaFileRepository.deleteAll(mediaFiles);
         }else{
 

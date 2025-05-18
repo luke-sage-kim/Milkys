@@ -20,13 +20,16 @@ public class Recordings extends BaseEntity {
     private Long id;
 
     @Column(name = "rec_title")
-    private String title;
+    private String title; //음원 작성시 음악 title이 자동을 들어가게  라벨용이지뭐
+
+    @Column(name = "parent_id")
+    private long parentId;
 
     @Column(name = "rec_content")
-    private String content;
+    private String content;//부가설명
 
     @Column(name = "rec_date")
-    private String recDate;//녹음날짜
+    private String recDate;//녹음날짜  거의 이게 메인 가로로 책처럼 펼치는거임
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mem_code")

@@ -27,7 +27,6 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "mem_code")
     private Long memberCode;
-    /*멤버식별코드*/
 
     @Column(name = "mem_id")
     private String memberId;

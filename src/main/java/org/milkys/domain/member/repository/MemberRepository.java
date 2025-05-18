@@ -1,17 +1,25 @@
 package org.milkys.domain.member.repository;
 
+import org.milkys.common.MilkysEnum;
 import org.milkys.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
-    @Query(value = "select * from member_table where mem_id = :id", nativeQuery = true)
-    Member findByMemberId(@Param("id") String id);
+    @Query("SELECT m FROM Member m WHERE m.memberId = :memberId")
+    Member findByMemberId(@Param("memberId") String memberId);
+
     @Query(value = "select * from member_table where mem_name = :memberName and mem_phone = :memberPhoneNumber", nativeQuery = true)
     Member findByMemberNameAndPhoneNum(String memberName, String memberPhoneNumber);
+
+    List<Member> findByMemberAuth(MilkysEnum.MemberRoleType memberAuth);
+
+    boolean existsByMemberId(String memberId);
 }
 
 /**

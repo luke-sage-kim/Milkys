@@ -2,6 +2,8 @@ package org.milkys.domain.recordings.service;
 
 import lombok.RequiredArgsConstructor;
 import org.milkys.common.dto.ResponseDto;
+import org.milkys.domain.mediaFile.dto.UploadMediaFileDto;
+import org.milkys.domain.mediaFile.service.MediaFileService;
 import org.milkys.domain.recordings.dto.SelectRecordingDto;
 import org.milkys.domain.recordings.dto.UpdateRecordingDto;
 import org.milkys.domain.recordings.dto.WriteRecordingDto;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 public class RecordingService {
     private final RecordingsRepository recordingsRepository;
     private final MemberRepository memberRepository;
+    private final MediaFileService mediaFileService;
     private final HttpSession session;
 
     private String createBoardVaildation(WriteRecordingDto writeRecordingDto) {
@@ -35,20 +38,31 @@ public class RecordingService {
         }
         return null;
     }
-    public ResponseDto recordingWrite(WriteRecordingDto writeRecordingDto, HttpSession session) {
+    public ResponseDto recordingWrite(WriteRecordingDto writeRecordingDto) {
         String error = createBoardVaildation(writeRecordingDto);
 
         if(StringUtils.hasText(error)) return new ResponseDto(error, HttpStatus.INTERNAL_SERVER_ERROR.value());
-        String memberId = (String) session.getAttribute("memberId");
-        if (memberId == null) {
-            return new ResponseDto<>("로그인을 해주세요.", HttpStatus.UNAUTHORIZED);
+        Optional<Member> memberOptional = memberRepository.findById(writeRecordingDto.getMemberCode());
+        if(memberOptional.isPresent()){
+            Member member = memberOptional.get();
+            Recordings recordings = writeRecordingDto.toEntity(member);
+
+
+
+            Recordings Recordingsave = recordingsRepository.save(recordings);
+
+            if (writeRecordingDto.getFiles() != null && !writeRecordingDto.getFiles().isEmpty()) {
+                UploadMediaFileDto uploadDto = new UploadMediaFileDto();
+                uploadDto.setFiles(writeRecordingDto.getFiles());
+                uploadDto.setDomainType("RECORDING"); // 도메인 타입 지정
+                uploadDto.setParentId(Recordingsave.getId()); // 저장된 레코딩 ID
+                mediaFileService.uploadMediaFiles(uploadDto);
+            }
+            if(Recordingsave != null) {
+                return new ResponseDto("음원기록작성을 완료하였습니다.", HttpStatus.OK.value());
+            } else return new ResponseDto("음원기록작성을 실패했습니다", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
-        Member member = memberRepository.findByMemberId(memberId);
-        Recordings recordings = writeRecordingDto.toEntity(member);
-        Recordings Recordingsave = recordingsRepository.save(recordings);
-        if(Recordingsave != null) {
-            return new ResponseDto("음원기록작성을 완료하였습니다.", HttpStatus.OK.value());
-        } else return new ResponseDto("음원기록작성을 실패했습니다", HttpStatus.INTERNAL_SERVER_ERROR.value());
+         else return new ResponseDto("계정 조회를 실패했습니다", HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     public ResponseDto<List<SelectRecordingDto>> selectRecordingList() {
@@ -69,21 +83,30 @@ public class RecordingService {
         }
     }
 
-    public ResponseDto<List<SelectRecordingDto>> findById(Long id) {
-        Optional<Recordings> optionalRecording = recordingsRepository.findById(id);
-        if (optionalRecording.isPresent()) {
-            Recordings recordings = optionalRecording.get();
-            SelectRecordingDto selectRecordingDto = SelectRecordingDto.fromRecordings(recordings);
-            return new ResponseDto(selectRecordingDto, HttpStatus.OK.value());
-        }else{
-            return new ResponseDto("서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+    public ResponseDto<List<SelectRecordingDto>> findByParentId(Long parentId) {
+        try {
+        List<Recordings> recordings= recordingsRepository.findByParentId(parentId);
+        List<SelectRecordingDto> selectRecordingDtos = recordings.stream()
+                .map(SelectRecordingDto::fromRecordings)  // fromMember 메서드를 사용
+                .collect(Collectors.toList());
+
+        if (!selectRecordingDtos.isEmpty()) {
+            return new ResponseDto(selectRecordingDtos, HttpStatus.OK.value());
+        } else {
+            return new ResponseDto("가져올 데이터가 없습니다.", HttpStatus.NO_CONTENT.value());
         }
+    } catch (Exception e) {
+        // 예외에 대한 로그 처리
+        return new ResponseDto("서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
     }
 
     public Object deleteRecording(Long id) {
         Optional<Recordings> optionalRecording = recordingsRepository.findById(id);
         if (optionalRecording.isPresent()) {
             Recordings recordings = optionalRecording.get();
+            mediaFileService.deleteMediaFile("RECORDING", recordings.getId());
+
             recordingsRepository.delete(recordings);
             return new ResponseDto("음원기록 삭제 성공", HttpStatus.OK.value());
         }

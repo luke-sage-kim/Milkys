@@ -81,10 +81,14 @@ public class MemberService {
      * @return
      */
     public ResponseDto login(String id, String pw) {
-        Optional<Member> member = Optional.ofNullable(memberRepository.findByMemberId(id));
+        Optional<Member> memberOptional = Optional.ofNullable(memberRepository.findByMemberId(id));
 
-        if (member.isPresent()) {
-            MemberDto memberDto = member.get().bringMemberInfo();
+        if (memberOptional.isPresent()) {
+            Member member = memberOptional.get();
+            if(member.getMemberAuth().equals(MilkysEnum.MemberRoleType.UNAPPROVAL)){
+                return new ResponseDto("UNAPPROVAL", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            }
+            MemberDto memberDto = memberOptional.get().bringMemberInfo();
             if (memberDto.getMemberPw().equals(pw)) {
                 // 패스워드가 일치하면 로그인 성공으로 처리합니다.
                 SessionUser sessionUser = new SessionUser(memberDto);
@@ -105,22 +109,12 @@ public class MemberService {
 
     //전체 멤버 데이터 가져오기
     public ResponseDto selectAllMember() {
-
         try {
         //멤버 테이블 리스트객체로 담아옴
         List<Member> members = memberRepository.findAll();
             List<SelectMemberDto> selectMemberDtos = members.stream()
                     .map(SelectMemberDto::fromMember)  // fromMember 메서드를 사용
                     .collect(Collectors.toList());
-        /**
-         * map 메서드는 스트림의 각 요소를 변환하는 함수적 인터페이스를 적용합니다.
-         * 여기서는 SelectMemberDto::new를 사용하여 각 Member 객체를 SelectMemberDto 객체로 변환합니다.
-         * 이는 메서드 레퍼런스(Method Reference)라고 불리며, SelectMemberDto의 생성자를 참조합니다.
-         * 즉, 각 Member 객체가 SelectMemberDto의 생성자로 전달되어 새로운 SelectMemberDto 객체가 생성됩니다.
-         * collect 메서드는 스트림의 결과를 수집하여 리스트, 세트 등으로 변환할 수 있게 합니다.
-         * Collectors.toList()는 스트림의 요소들을 List 형태로 수집합니다.
-         * 따라서 최종적으로 List<SelectMemberDto> 타입의 리스트가 생성됩니다.
-         */
             if (!selectMemberDtos.isEmpty()) {
                 return new ResponseDto(selectMemberDtos, HttpStatus.OK.value());
             } else {
@@ -130,7 +124,6 @@ public class MemberService {
             // 예외에 대한 로그 처리
             return new ResponseDto("서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
-
 
     }
 
@@ -189,16 +182,17 @@ public class MemberService {
         return new ResponseDto("success.", HttpStatus.OK.value());
     }
 
-    public ResponseDto changeMememberAuth(Long id, String memberAuth, HttpSession session) {
-        String auth = (String) session.getAttribute("memberAuth");
-        if(!memberAuth.equals(MilkysEnum.MemberRoleType.ADMIN)
+    public ResponseDto changeMememberAuth(AuthDto authDto) {
+        String myAuth = authDto.getMemberAuth();
+        long id = authDto.getMemberCode();
+        if(!myAuth.equals("ADMIN")
         ){
             return new ResponseDto<>("관리자만 회원권한을 수정할 수 있습니다.", HttpStatus.UNAUTHORIZED);
         }
         Optional<Member> memberOptional = memberRepository.findById(id);
         if(memberOptional.isPresent()){
             Member member = memberOptional.get();
-            member.changeMememberAuth(memberAuth);
+            member.changeMememberAuth(authDto.getTargetAuth());
             memberRepository.save(member);
             return new ResponseDto("회원등급이 수정되었습니다.", HttpStatus.OK.value());
         }else {
@@ -206,17 +200,17 @@ public class MemberService {
         }
     }
 
-    public ResponseDto changeMememberToAdmin(Long id) {
-        Optional<Member> memberOptional = memberRepository.findById(id);
-        if(memberOptional.isPresent()){
-            Member member = memberOptional.get();
-            member.changeMememberAuth("ADMIN");
-            memberRepository.save(member);
-            return new ResponseDto("관리자로 지정되었습니다.", HttpStatus.OK.value());
-        }else {
-            return new ResponseDto<>("회원이 존재하지않습니다.", HttpStatus.UNAUTHORIZED);
-        }
-    }
+//    public ResponseDto changeMememberToAdmin(Long id) {
+//        Optional<Member> memberOptional = memberRepository.findById(id);
+//        if(memberOptional.isPresent()){
+//            Member member = memberOptional.get();
+//            member.changeMememberAuth("ADMIN");
+//            memberRepository.save(member);
+//            return new ResponseDto("관리자로 지정되었습니다.", HttpStatus.OK.value());
+//        }else {
+//            return new ResponseDto<>("회원이 존재하지않습니다.", HttpStatus.UNAUTHORIZED);
+//        }
+//    }
 
     public MemberDto getMemberDto(String id) {
         Optional<Member> member = Optional.ofNullable(memberRepository.findByMemberId(id));
@@ -229,4 +223,53 @@ public class MemberService {
         }
 
     }
+
+    public ResponseDto unapprovalList() {
+        try {
+            //멤버 테이블 리스트객체로 담아옴
+            List<Member> members = memberRepository.findByMemberAuth(MilkysEnum.MemberRoleType.UNAPPROVAL);
+            List<SelectMemberDto> selectMemberDtos = members.stream()
+                    .map(SelectMemberDto::fromMember)  // fromMember 메서드를 사용
+                    .collect(Collectors.toList());
+            if (!selectMemberDtos.isEmpty()) {
+                return new ResponseDto(selectMemberDtos, HttpStatus.OK.value());
+            } else {
+                return new ResponseDto("가져올 데이터가 없습니다.", HttpStatus.NO_CONTENT.value());
+            }
+        } catch (Exception e) {
+            // 예외에 대한 로그 처리
+            return new ResponseDto("서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+
+    }
+
+    public ResponseDto approveMember(AuthDto authDto) {
+        String myAuth = authDto.getMemberAuth();
+        long id = authDto.getMemberCode();
+        if(!myAuth.equals("ADMIN")
+        ){
+            return new ResponseDto<>("관리자만 회원권한을 수정할 수 있습니다.", HttpStatus.UNAUTHORIZED);
+        }
+        Optional<Member> memberOptional = memberRepository.findById(id);
+        if(memberOptional.isPresent()){
+            Member member = memberOptional.get();
+            member.changeMememberAuth("USER");
+            memberRepository.save(member);
+            return new ResponseDto("회원가입이 승인되었습니다.", HttpStatus.OK.value());
+        }else {
+            return new ResponseDto<>("회원이 존재하지않습니다.", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    public ResponseDto findDuplicateMember(String memberId) {
+        boolean exists = memberRepository.existsByMemberId(memberId);
+        if (exists) {
+            return new ResponseDto("중복", HttpStatus.CONFLICT.value());
+        } else {
+            return new ResponseDto("중복없음", HttpStatus.OK.value());
+
+        }
+    }
+
+    //approveMember
 }

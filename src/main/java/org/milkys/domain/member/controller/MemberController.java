@@ -74,7 +74,6 @@ public class MemberController {
     public ResponseDto logoutMember(HttpServletRequest request) {
 
         request.getSession().invalidate();
-        System.out.println("로그아웃성공");
         ResponseDto response = new ResponseDto("로그아웃 되었습니다.", HttpStatus.OK.value());
         return response;
     }
@@ -116,12 +115,10 @@ public class MemberController {
 
 
     //회원탈퇴
-    @DeleteMapping(value = "/v1/memberDelete")
-    public ResponseDto deleteMember(){
-        SessionUser loggedInUser = (SessionUser) session.getAttribute("loggedInUser");
-        Long memberCode = loggedInUser.getMemberCode();
-        commentService.deleteComment(memberCode,"member");
-        return new ResponseDto (memberService.deleteMember(memberCode));
+    @DeleteMapping("/v1/memberDelete")
+    public ResponseDto deleteMember(@RequestParam long memberCode) {
+        commentService.deleteComment(memberCode, "member");
+        return new ResponseDto(memberService.deleteMember(memberCode));
     }
 
     @GetMapping("/v1/session")
@@ -172,17 +169,38 @@ public class MemberController {
             value = "회원 권한 수정"
             , notes = "관리자가 회원 권한 수정")
     @PutMapping("/v1/auth")
-    public ResponseDto changeMememberAuth(@RequestBody Long id, @RequestBody String memberAuth, HttpSession session ) {
+    public ResponseDto changeMememberAuth(@RequestBody AuthDto authDto ) {
 
-        return new ResponseDto (memberService.changeMememberAuth(id,memberAuth,session));
+        return new ResponseDto (memberService.changeMememberAuth(authDto));
     }
 
     @ApiOperation(
-            value = "회원 관리자임명"
-            , notes = "관리자가 회원 권한 수정")
-    @PutMapping("/v1/admin")
-    public ResponseDto changeMememberToAdmin(@RequestBody Long id ) {
-
-        return new ResponseDto (memberService.changeMememberToAdmin(id));
+            value = "승인전 회원조회"
+            , notes = "승인전 회원조회")
+    @GetMapping(value = "/v1/unapprovalList")
+    public ResponseDto<List<SelectMemberDto>> unapprovalList(
+    ) {
+        return memberService.unapprovalList();
     }
+
+    @ApiOperation(
+            value = "회원가입요청 승인"
+            , notes = "선택한 회원 가입 승인")
+    @PutMapping("/v1/approve")
+    public ResponseDto approveMember(@RequestBody AuthDto authDto ) {
+
+        return new ResponseDto (memberService.approveMember(authDto));
+    }
+
+    @ApiOperation(
+            value = "중복아이디 판별"
+            , notes = "아이디를 입력받아 중복인지 아닌지 검사")
+    @PostMapping("/v1/duplicate")
+    public ResponseDto findDuplicateMember(@RequestBody LoginDto loginDto ) {
+        return new ResponseDto (memberService.findDuplicateMember(loginDto.getMemberId()));
+    }
+
+
+
+
 }

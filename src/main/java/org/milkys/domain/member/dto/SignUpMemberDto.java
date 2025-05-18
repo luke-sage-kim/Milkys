@@ -52,7 +52,7 @@ public class SignUpMemberDto {
                 .memberNickname(this.memberNickname)
                 .memberBirthday(this.memberBirthday)
                 .memberPhoneNumber(this.memberPhoneNumber)
-                .memberAuth(MilkysEnum.MemberRoleType.USER)
+                .memberAuth(MilkysEnum.MemberRoleType.UNAPPROVAL)
                 .build();
     }
 

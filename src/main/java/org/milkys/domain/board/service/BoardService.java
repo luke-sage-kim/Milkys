@@ -1,6 +1,7 @@
 package org.milkys.domain.board.service;
 
 import lombok.RequiredArgsConstructor;
+import org.milkys.common.MilkysEnum;
 import org.milkys.common.dto.ResponseDto;
 import org.milkys.domain.board.dto.SelectBoardDto;
 import org.milkys.domain.board.dto.UpdateBoardDto;
@@ -117,5 +118,21 @@ public class BoardService {
         boardRepository.save(board);
         return new ResponseDto("게시글이 업데이트되었습니다.", HttpStatus.OK.value());
     }
+    public ResponseDto<List<SelectBoardDto>> selectNoticeList() {
+        try {
+            List<Board> notices = boardRepository.findTop3ByBoardTypeOrderByCreatedTimeDesc(MilkysEnum.BoardType.NOTICE);
+            List<SelectBoardDto> selectBoardDtos = notices.stream()
+                    .map(SelectBoardDto::fromBoard)  // fromMember 메서드를 사용
+                    .collect(Collectors.toList());
 
+            if (!selectBoardDtos.isEmpty()) {
+                return new ResponseDto(selectBoardDtos, HttpStatus.OK.value());
+            } else {
+                return new ResponseDto("가져올 데이터가 없습니다.", HttpStatus.NO_CONTENT.value());
+            }
+        } catch (Exception e) {
+            // 예외에 대한 로그 처리
+            return new ResponseDto("서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+    }
 }

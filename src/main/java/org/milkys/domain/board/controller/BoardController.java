@@ -77,17 +77,14 @@ public class BoardController {
         return new ResponseDto (boardService.deleteBoard(id));
     }
 
-//    @ApiOperation(
-//            value = "게시글 작성"
-//            , notes = "화면에서 입력받은 글정보 작성")
-//    @PostMapping(value = "/v1/{id}/comment")
-//    public ResponseDto boardCommentWrite(@Valid @RequestBody WriteCommentDto writeCommentDto,@PathVariable Long id, HttpSession session) {
-//        SessionUser loggedInUser = (SessionUser) session.getAttribute("loggedInUser");
-//        Long memberCode = loggedInUser.getMemberCode();
-//
-//        return commentService.commentWrite(writeCommentDto,id,memberCode, MilkysEnum.CommentParent.BOARD);
-//
-//    }
+    @ApiOperation(
+            value = "공지사항 조회"
+            , notes = "게시판테이블에있는 공지사항 조회 다만 최신날짜3개만")
+    @GetMapping(value = "/v1/notice")
+    public ResponseDto<List<SelectBoardDto>> noticeList() {
 
+        return boardService.selectNoticeList();
+
+    }
 
 }
