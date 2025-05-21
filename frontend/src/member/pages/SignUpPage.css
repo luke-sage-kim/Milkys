@@ -1,0 +1,35 @@
+/* src/pages/SignUpPage.css */
+.signup-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+  }
+  
+  .signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .signup-form label {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .signup-form input {
+    padding: 8px;
+    font-size: 1rem;
+    margin-top: 5px;
+  }
+  
+  .button-group {
+    margin-top: 15px;
+  }
+  
+  button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  
