@@ -14,9 +14,11 @@ const MusicMainPage = () => {
         const fetchMusicList = async () => {
             try {
                 const response = await axios.get("http://localhost:8080/music/v1");
-                setMusicList(response.data.resultData);
+                // 배열인지 확인해서 아니면 빈 배열 할당
+                setMusicList(Array.isArray(response.data.resultData) ? response.data.resultData : []);
             } catch (error) {
                 console.error("음악 리스트를 가져오는 중 오류 발생:", error);
+                setMusicList([]); // 실패 시 빈 배열 세팅
             } finally {
                 setLoading(false);
             }
@@ -24,6 +26,7 @@ const MusicMainPage = () => {
 
         fetchMusicList();
     }, []);
+
 
     if (loading) {
         return <div className="text-center text-lg font-semibold py-10">로딩 중...</div>;

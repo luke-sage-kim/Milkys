@@ -14,9 +14,10 @@ const GalleryMainPage = () => {
         const fetchGalleryList = async () => {
             try {
                 const response = await axios.get("http://localhost:8080/gallery/v1");
-                setGalleryList(response.data.resultData);
+                setGalleryList(Array.isArray(response.data.resultData) ? response.data.resultData : []);
             } catch (error) {
                 console.error("갤러리 리스트를 가져오는 중 오류 발생:", error);
+                setGalleryList([]); // 에러 시 빈 배열 세팅
             } finally {
                 setLoading(false);
             }

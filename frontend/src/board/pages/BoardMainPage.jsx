@@ -14,9 +14,10 @@ const BoardMainPage = () => {
         const fetchBoardList = async () => {
             try {
                 const response = await axios.get("http://localhost:8080/board/v1");
-                setBoardList(response.data.resultData);
+                setBoardList(Array.isArray(response.data.resultData) ? response.data.resultData : []);
             } catch (error) {
                 console.error("게시글을 불러오는 중 오류 발생:", error);
+                setBoardList([]); // 에러 시 빈 배열 세팅
             } finally {
                 setLoading(false);
             }
@@ -24,6 +25,7 @@ const BoardMainPage = () => {
 
         fetchBoardList();
     }, []);
+
 
     const getBoardTypeLabel = (type) => {
         switch (type) {

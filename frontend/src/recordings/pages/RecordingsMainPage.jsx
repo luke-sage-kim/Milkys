@@ -14,9 +14,10 @@ const RecordingsMainPage = () => {
         const fetchRecordings = async () => {
             try {
                 const response = await axios.get("http://localhost:8080/music/v1/setList");
-                setRecordings(response.data.resultData || []);
+                setRecordings(Array.isArray(response.data.resultData) ? response.data.resultData : []);
             } catch (error) {
                 console.error("셋리스트를 가져오는 중 오류 발생:", error);
+                setRecordings([]);  // 오류 시 빈 배열 세팅
             } finally {
                 setLoading(false);
             }
@@ -24,6 +25,7 @@ const RecordingsMainPage = () => {
 
         fetchRecordings();
     }, []);
+
 
     const colors = ['#FFD700', '#87CEEB', '#FFB6C1', '#98FB98', '#FFA07A'];
 
