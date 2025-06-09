@@ -1,4 +1,4 @@
-# 📌 프로젝트 이름
+![image](https://github.com/user-attachments/assets/4a3d9822-6a4e-47b8-b0bd-8cf50d958e6a)# 📌 프로젝트 이름
 
 밀키스 밴드 그룹웨어
 
@@ -29,9 +29,15 @@
 
 ## 📸 데모 & 스크린샷
 
-스크린샷이나 동작 영상 등을 첨부합니다.
+![image](https://github.com/user-attachments/assets/89f6362e-b9a4-4a25-97c2-561b71d13863)
 
-![demo](./images/demo.gif)
+![image](https://github.com/user-attachments/assets/fc9318de-62c2-4ecc-8988-2c040ef9f7a8)
+
+![image](https://github.com/user-attachments/assets/617acedc-3138-40c2-86fe-f2bc60df9f95)
+
+![image](https://github.com/user-attachments/assets/ff3a6e51-8aa2-4584-b549-394138468386)
+
+![image](https://github.com/user-attachments/assets/b6f3609c-8be2-4010-8939-fa0c34cc49ee)
 
 ---
 
