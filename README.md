@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/4a3d9822-6a4e-47b8-b0bd-8cf50d958e6a)# 📌 프로젝트 이름
+📌 프로젝트 이름
 
 밀키스 밴드 그룹웨어
 
